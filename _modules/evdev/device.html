@@ -1,0 +1,246 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>evdev.device &mdash; python-evdev 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-evdev 0.1.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-evdev 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for evdev.device</h1><div class="highlight"><pre>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">_input</span><span class="p">,</span> <span class="n">ecodes</span>
+<span class="kn">from</span> <span class="nn">evdev.events</span> <span class="kn">import</span> <span class="n">InputEvent</span>
+
+
+<div class="viewcode-block" id="DeviceInfo"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo">[docs]</a><span class="k">class</span> <span class="nc">DeviceInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="s">&#39;bustype&#39;</span><span class="p">,</span> <span class="s">&#39;product&#39;</span><span class="p">,</span> <span class="s">&#39;vendor&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span>
+
+<div class="viewcode-block" id="DeviceInfo.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bustype</span><span class="p">,</span> <span class="n">vendor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span> <span class="o">=</span> <span class="n">bustype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span>  <span class="o">=</span> <span class="n">vendor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="n">product</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+</div>
+<div class="viewcode-block" id="DeviceInfo.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;bus: {:04x}, product {:04x}, vendor {:04x}, version {:04x}&#39;</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bustype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DeviceInfo.__repr__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">bustype</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">vendor</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&#39;{}({:04x}, {:04x}, {:04x}, {:04x})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="DeviceInfo.__eq__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">bustype</span> \
+           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span>  <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">vendor</span>  \
+           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">product</span> \
+           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">version</span>
+
+</div></div>
+<div class="viewcode-block" id="InputDevice"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice">[docs]</a><span class="k">class</span> <span class="nc">InputDevice</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A linux input device from which input events can be read.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="s">&#39;fn&#39;</span><span class="p">,</span> <span class="s">&#39;nophys&#39;</span><span class="p">,</span> <span class="s">&#39;fd&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;phys&#39;</span><span class="p">,</span> <span class="s">&#39;_capabilities&#39;</span>
+
+<div class="viewcode-block" id="InputDevice.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">nophys</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        :param dev: path to input device</span>
+<span class="sd">        :param nophys: do not do a EVIOCGPHYS ioctl (needed by uinput)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c">#: Path to input device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">dev</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">nophys</span> <span class="o">=</span> <span class="n">nophys</span>
+
+        <span class="c">#: A non-blocking file descriptor to the device file</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">)</span>
+
+        <span class="c"># Returns (bustype, vendor, product, version, name, phys, capabilities)</span>
+        <span class="n">info_res</span>  <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_devinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">nophys</span><span class="p">)</span>
+
+        <span class="c">#: A :class:`DeviceInfo &lt;evdev.device.DeviceInfo&gt;` instance</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">DeviceInfo</span><span class="p">(</span><span class="o">*</span><span class="n">info_res</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
+
+        <span class="c">#: The name of the event device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
+
+        <span class="c">#: The physical topology of the device</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phys</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nophys</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nophys</span> <span class="k">else</span> <span class="p">{}</span>
+</div>
+<div class="viewcode-block" id="InputDevice.capabilities"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the event types that this device supports as a a mapping of</span>
+<span class="sd">        supported event types to lists of handled event codes. Example::</span>
+
+<span class="sd">          { 1: [272, 273, 274],</span>
+<span class="sd">            2: [0, 1, 6, 8] }</span>
+
+<span class="sd">        If verbose is `True`, event codes and types will be resolved to their</span>
+<span class="sd">        names. Example::</span>
+
+<span class="sd">          { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272), (&#39;BTN_RIGHT&#39;, 273), (&#39;BTN_MIDDLE&#39;, 273)],</span>
+<span class="sd">            (&#39;EV_REL&#39;, 2) : [(&#39;REL_X&#39;, 0), (&#39;REL_Y&#39;, 0), (&#39;REL_HWHEEL&#39;, 6), (&#39;REL_WHEEL&#39;, 8)] }</span>
+
+<span class="sd">        Unknown codes or types will be resolved to &#39;?&#39;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="n">cap</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="nb">type</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+                <span class="n">type_name</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
+
+                <span class="c"># ecodes.keys are a combination of KEY_ and BTN_ codes</span>
+                <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
+                    <span class="n">code_names</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">keys</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">code_names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ecodes</span><span class="p">,</span> <span class="n">type_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+
+                <span class="n">codes_res</span> <span class="o">=</span> <span class="p">[]</span>
+                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+                    <span class="n">l</span> <span class="o">=</span> <span class="p">[(</span><span class="n">code_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">code_names</span> <span class="k">else</span> <span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
+                    <span class="n">codes_res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+                <span class="n">cap</span><span class="p">[(</span><span class="n">type_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">)]</span> <span class="o">=</span> <span class="n">codes_res</span>
+            <span class="k">return</span> <span class="n">cap</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span>
+</div>
+<div class="viewcode-block" id="InputDevice.__eq__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39; Two devices are considered equal if their :data:`info` attributes are equal. &#39;&#39;&#39;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">info</span>
+</div>
+<div class="viewcode-block" id="InputDevice.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;device {}, name &quot;{}&quot;, phys &quot;{}&quot;&#39;</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phys</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDevice.__repr__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nophys</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&#39;{}({!r}, {})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDevice.close"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+</div>
+<div class="viewcode-block" id="InputDevice.fileno"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.fileno">[docs]</a>    <span class="k">def</span> <span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns file descriptor to event device. This makes passing InputDevice</span>
+<span class="sd">        instances directly to :func:`select.select()` and</span>
+<span class="sd">        :class:`asyncore.file_dispatcher` possible.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span>
+</div>
+<div class="viewcode-block" id="InputDevice.read_one"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.read_one">[docs]</a>    <span class="k">def</span> <span class="nf">read_one</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Read and return a single input event as a</span>
+<span class="sd">        :class:`InputEvent &lt;evdev.events.InputEvent&gt;` instance.</span>
+
+<span class="sd">        Return `None` if there are no pending input events.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="c"># event -&gt; (sec, usec, type, code, val)</span>
+        <span class="n">event</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">device_read</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
+            <span class="k">return</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDevice.read"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Read multiple input events from device. This function returns a</span>
+<span class="sd">        generator object that yields :class:`InputEvent</span>
+<span class="sd">        &lt;evdev.events.InputEvent&gt;` instances.  &#39;&#39;&#39;</span>
+
+        <span class="c"># events -&gt; [(sec, usec, type, code, val), ...]</span>
+        <span class="n">events</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">device_read_many</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
+            <span class="k">yield</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-evdev 0.1.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Georgi Valkov.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

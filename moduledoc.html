@@ -1,0 +1,657 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>evdev.events &mdash; python-evdev 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-evdev 0.1.0 documentation" href="index.html" />
+    <link rel="prev" title="evdev documentation" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="evdev documentation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-evdev.events">
+<span id="evdev-events"></span><h1>evdev.events<a class="headerlink" href="#module-evdev.events" title="Permalink to this headline">¶</a></h1>
+<p>This module provides the <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> class, which closely resembles the
+<cite>input_event</cite> C struct in <cite>linux/input.h</cite>:</p>
+<div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">input_event</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">timeval</span> <span class="n">time</span><span class="p">;</span>
+    <span class="n">__u16</span> <span class="n">type</span><span class="p">;</span>
+    <span class="n">__u16</span> <span class="n">code</span><span class="p">;</span>
+    <span class="n">__s32</span> <span class="n">value</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<p>This module also defines several abstractions on top of <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a>
+that know more about the different event types (key, abs, rel etc). The
+<a class="reference internal" href="#evdev.events.event_factory" title="evdev.events.event_factory"><tt class="xref py py-data docutils literal"><span class="pre">event_factory</span></tt></a> dictionary maps event types to these classes.</p>
+<p>Assuming you use the provided <a class="reference internal" href="#evdev.util.categorize" title="evdev.util.categorize"><tt class="xref py py-func docutils literal"><span class="pre">evdev.util.categorize()</span></tt></a> function to
+categorize events according to type, adding or replacing a class for a specific
+event type becomes a matter of modifying <a class="reference internal" href="#evdev.events.event_factory" title="evdev.events.event_factory"><tt class="xref py py-data docutils literal"><span class="pre">event_factory</span></tt></a>.</p>
+<p>All of the provided classes have reasonable str() and repr() methods:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="go">event at 1337197425.477827, code 04, type 04, val 458792</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+<span class="go">InputEvent(1337197425L, 477827L, 4, 4, 458792L)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">key_event</span><span class="p">)</span>
+<span class="go">key event at 1337197425.477835, 28 (KEY_ENTER), up</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">key_event</span><span class="p">))</span>
+<span class="go">KeyEvent(InputEvent(1337197425L, 477835L, 1, 28, 0L))</span>
+</pre></div>
+</div>
+<dl class="class">
+<dt id="evdev.events.InputEvent">
+<em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">InputEvent</tt><big>(</big><em>sec</em>, <em>usec</em>, <em>type</em>, <em>code</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>A generic input event. This closely resembles the input_event C struct.</p>
+<dl class="method">
+<dt id="evdev.events.InputEvent.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>sec</em>, <em>usec</em>, <em>type</em>, <em>code</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.events'</em><a class="headerlink" href="#evdev.events.InputEvent.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.InputEvent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = ('sec', 'usec', 'type', 'code', 'value')</em><a class="headerlink" href="#evdev.events.InputEvent.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.InputEvent.__str__">
+<tt class="descname">__str__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.code">
+<tt class="descname">code</tt><a class="headerlink" href="#evdev.events.InputEvent.code" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event code - probably one of <a class="reference internal" href="#evdev.ecodes.bytype" title="evdev.ecodes.bytype"><tt class="xref py py-data docutils literal"><span class="pre">evdev.ecodes.bytype</span></tt></a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.sec">
+<tt class="descname">sec</tt><a class="headerlink" href="#evdev.events.InputEvent.sec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Time in seconds since epoch at which event occurred</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.InputEvent.timestamp">
+<tt class="descname">timestamp</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent.timestamp"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent.timestamp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return event timestamp as a python float.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.type">
+<tt class="descname">type</tt><a class="headerlink" href="#evdev.events.InputEvent.type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event type - one of ecodes.EV_*</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.usec">
+<tt class="descname">usec</tt><a class="headerlink" href="#evdev.events.InputEvent.usec" title="Permalink to this definition">¶</a></dt>
+<dd><p>Microsecond portion of the timestamp</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.InputEvent.value">
+<tt class="descname">value</tt><a class="headerlink" href="#evdev.events.InputEvent.value" title="Permalink to this definition">¶</a></dt>
+<dd><p>Event value</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evdev.events.KeyEvent">
+<em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">KeyEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#KeyEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.KeyEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to describe state changes of keyboards, buttons, or other
+key-like devices.</p>
+<dl class="method">
+<dt id="evdev.events.KeyEvent.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#KeyEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.KeyEvent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.events'</em><a class="headerlink" href="#evdev.events.KeyEvent.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.KeyEvent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#KeyEvent.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.KeyEvent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = ('scancode', 'keycode', 'keystate', 'event')</em><a class="headerlink" href="#evdev.events.KeyEvent.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.KeyEvent.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/events.html#KeyEvent.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.KeyEvent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.event">
+<tt class="descname">event</tt><a class="headerlink" href="#evdev.events.KeyEvent.event" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.key_down">
+<tt class="descname">key_down</tt><em class="property"> = 1</em><a class="headerlink" href="#evdev.events.KeyEvent.key_down" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.key_hold">
+<tt class="descname">key_hold</tt><em class="property"> = 2</em><a class="headerlink" href="#evdev.events.KeyEvent.key_hold" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.key_up">
+<tt class="descname">key_up</tt><em class="property"> = 0</em><a class="headerlink" href="#evdev.events.KeyEvent.key_up" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.keycode">
+<tt class="descname">keycode</tt><a class="headerlink" href="#evdev.events.KeyEvent.keycode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.keystate">
+<tt class="descname">keystate</tt><a class="headerlink" href="#evdev.events.KeyEvent.keystate" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.KeyEvent.scancode">
+<tt class="descname">scancode</tt><a class="headerlink" href="#evdev.events.KeyEvent.scancode" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evdev.events.AbsEvent">
+<em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">AbsEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#AbsEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.AbsEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to describe absolute axis value changes, e.g. describing the
+coordinates of a touch on a touchscreen.</p>
+<dl class="method">
+<dt id="evdev.events.AbsEvent.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#AbsEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.AbsEvent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.AbsEvent.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.events'</em><a class="headerlink" href="#evdev.events.AbsEvent.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.AbsEvent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#AbsEvent.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.AbsEvent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.AbsEvent.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = 'event'</em><a class="headerlink" href="#evdev.events.AbsEvent.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.AbsEvent.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/events.html#AbsEvent.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.AbsEvent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.AbsEvent.event">
+<tt class="descname">event</tt><a class="headerlink" href="#evdev.events.AbsEvent.event" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instance</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evdev.events.RelEvent">
+<em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">RelEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#RelEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.RelEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used to describe relative axis value changes, e.g. moving the
+mouse 5 units to the left.</p>
+<dl class="method">
+<dt id="evdev.events.RelEvent.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#RelEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.RelEvent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.RelEvent.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.events'</em><a class="headerlink" href="#evdev.events.RelEvent.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.RelEvent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#RelEvent.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.RelEvent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.RelEvent.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = 'event'</em><a class="headerlink" href="#evdev.events.RelEvent.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.RelEvent.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/events.html#RelEvent.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.RelEvent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.RelEvent.event">
+<tt class="descname">event</tt><a class="headerlink" href="#evdev.events.RelEvent.event" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instance</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evdev.events.SynEvent">
+<em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">SynEvent</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#SynEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.SynEvent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used as markers to separate events. Events may be separated in time or
+in space, such as with the multitouch protocol.</p>
+<dl class="method">
+<dt id="evdev.events.SynEvent.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#SynEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.SynEvent.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.SynEvent.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.events'</em><a class="headerlink" href="#evdev.events.SynEvent.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.SynEvent.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#SynEvent.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.SynEvent.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.SynEvent.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = 'event'</em><a class="headerlink" href="#evdev.events.SynEvent.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.events.SynEvent.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/events.html#SynEvent.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.SynEvent.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.events.SynEvent.event">
+<tt class="descname">event</tt><a class="headerlink" href="#evdev.events.SynEvent.event" title="Permalink to this definition">¶</a></dt>
+<dd><p><a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instance</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="data">
+<dt id="evdev.events.event_factory">
+<tt class="descclassname">evdev.events.</tt><tt class="descname">event_factory</tt><em class="property"> = {0: &lt;class 'evdev.events.SynEvent'&gt;, 1: &lt;class 'evdev.events.KeyEvent'&gt;, 2: &lt;class 'evdev.events.RelEvent'&gt;, 3: &lt;class 'evdev.events.AbsEvent'&gt;}</em><a class="headerlink" href="#evdev.events.event_factory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used by <a class="reference internal" href="#evdev.util.categorize" title="evdev.util.categorize"><tt class="xref py py-func docutils literal"><span class="pre">evdev.util.categorize()</span></tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-evdev.device">
+<span id="evdev-device"></span><h1>evdev.device<a class="headerlink" href="#module-evdev.device" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="evdev.device.InputDevice">
+<em class="property">class </em><tt class="descclassname">evdev.device.</tt><tt class="descname">InputDevice</tt><big>(</big><em>dev</em>, <em>nophys=False</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice" title="Permalink to this definition">¶</a></dt>
+<dd><p>A linux input device from which input events can be read.</p>
+<dl class="method">
+<dt id="evdev.device.InputDevice.__eq__">
+<tt class="descname">__eq__</tt><big>(</big><em>o</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd><p>Two devices are considered equal if their <a class="reference internal" href="#evdev.device.InputDevice.info" title="evdev.device.InputDevice.info"><tt class="xref py py-data docutils literal"><span class="pre">info</span></tt></a> attributes are equal.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>dev</em>, <em>nophys=False</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.__init__" title="Permalink to this definition">¶</a></dt>
+<dd><table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>dev</strong> &#8211; path to input device</li>
+<li><strong>nophys</strong> &#8211; do not do a EVIOCGPHYS ioctl (needed by uinput)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.device'</em><a class="headerlink" href="#evdev.device.InputDevice.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = ('fn', 'nophys', 'fd', 'info', 'name', 'phys', '_capabilities')</em><a class="headerlink" href="#evdev.device.InputDevice.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.capabilities">
+<tt class="descname">capabilities</tt><big>(</big><em>verbose=False</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.capabilities"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.capabilities" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the event types that this device supports as a a mapping of
+supported event types to lists of handled event codes. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">272</span><span class="p">,</span> <span class="mi">273</span><span class="p">,</span> <span class="mi">274</span><span class="p">],</span>
+  <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>If verbose is <cite>True</cite>, event codes and types will be resolved to their
+names. Example:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span> <span class="p">(</span><span class="s">&#39;EV_KEY&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="p">:</span> <span class="p">[(</span><span class="s">&#39;BTN_MOUSE&#39;</span><span class="p">,</span> <span class="mi">272</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;BTN_RIGHT&#39;</span><span class="p">,</span> <span class="mi">273</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;BTN_MIDDLE&#39;</span><span class="p">,</span> <span class="mi">273</span><span class="p">)],</span>
+  <span class="p">(</span><span class="s">&#39;EV_REL&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="p">:</span> <span class="p">[(</span><span class="s">&#39;REL_X&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;REL_Y&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;REL_HWHEEL&#39;</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;REL_WHEEL&#39;</span><span class="p">,</span> <span class="mi">8</span><span class="p">)]</span> <span class="p">}</span>
+</pre></div>
+</div>
+<p>Unknown codes or types will be resolved to &#8216;?&#8217;.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.close">
+<tt class="descname">close</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.close"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.close" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.fd">
+<tt class="descname">fd</tt><a class="headerlink" href="#evdev.device.InputDevice.fd" title="Permalink to this definition">¶</a></dt>
+<dd><p>A non-blocking file descriptor to the device file</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.fileno">
+<tt class="descname">fileno</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.fileno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.fileno" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns file descriptor to event device. This makes passing InputDevice
+instances directly to <a class="reference external" href="http://docs.python.org/3.2/library/select.html#select.select" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">select.select()</span></tt></a> and
+<a class="reference external" href="http://docs.python.org/3.2/library/asyncore.html#asyncore.file_dispatcher" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">asyncore.file_dispatcher</span></tt></a> possible.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.fn">
+<tt class="descname">fn</tt><a class="headerlink" href="#evdev.device.InputDevice.fn" title="Permalink to this definition">¶</a></dt>
+<dd><p>Path to input device</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.info">
+<tt class="descname">info</tt><a class="headerlink" href="#evdev.device.InputDevice.info" title="Permalink to this definition">¶</a></dt>
+<dd><p>A <a class="reference internal" href="#evdev.device.DeviceInfo" title="evdev.device.DeviceInfo"><tt class="xref py py-class docutils literal"><span class="pre">DeviceInfo</span></tt></a> instance</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.name">
+<tt class="descname">name</tt><a class="headerlink" href="#evdev.device.InputDevice.name" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the event device</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.nophys">
+<tt class="descname">nophys</tt><a class="headerlink" href="#evdev.device.InputDevice.nophys" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.InputDevice.phys">
+<tt class="descname">phys</tt><a class="headerlink" href="#evdev.device.InputDevice.phys" title="Permalink to this definition">¶</a></dt>
+<dd><p>The physical topology of the device</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.read">
+<tt class="descname">read</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.read" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read multiple input events from device. This function returns a
+generator object that yields <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instances.</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.InputDevice.read_one">
+<tt class="descname">read_one</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.read_one"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.read_one" title="Permalink to this definition">¶</a></dt>
+<dd><p>Read and return a single input event as a
+<a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instance.</p>
+<p>Return <cite>None</cite> if there are no pending input events.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="evdev.device.DeviceInfo">
+<em class="property">class </em><tt class="descclassname">evdev.device.</tt><tt class="descname">DeviceInfo</tt><big>(</big><em>bustype</em>, <em>vendor</em>, <em>product</em>, <em>version</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#DeviceInfo"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.DeviceInfo" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="evdev.device.DeviceInfo.__eq__">
+<tt class="descname">__eq__</tt><big>(</big><em>o</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#DeviceInfo.__eq__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.DeviceInfo.__eq__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.DeviceInfo.__init__">
+<tt class="descname">__init__</tt><big>(</big><em>bustype</em>, <em>vendor</em>, <em>product</em>, <em>version</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#DeviceInfo.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.DeviceInfo.__init__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.__module__">
+<tt class="descname">__module__</tt><em class="property"> = 'evdev.device'</em><a class="headerlink" href="#evdev.device.DeviceInfo.__module__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.DeviceInfo.__repr__">
+<tt class="descname">__repr__</tt><big>(</big><em>s</em><big>)</big><a class="reference internal" href="_modules/evdev/device.html#DeviceInfo.__repr__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.DeviceInfo.__repr__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.__slots__">
+<tt class="descname">__slots__</tt><em class="property"> = ('bustype', 'product', 'vendor', 'version')</em><a class="headerlink" href="#evdev.device.DeviceInfo.__slots__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="method">
+<dt id="evdev.device.DeviceInfo.__str__">
+<tt class="descname">__str__</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#DeviceInfo.__str__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.DeviceInfo.__str__" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.bustype">
+<tt class="descname">bustype</tt><a class="headerlink" href="#evdev.device.DeviceInfo.bustype" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.product">
+<tt class="descname">product</tt><a class="headerlink" href="#evdev.device.DeviceInfo.product" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.vendor">
+<tt class="descname">vendor</tt><a class="headerlink" href="#evdev.device.DeviceInfo.vendor" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt id="evdev.device.DeviceInfo.version">
+<tt class="descname">version</tt><a class="headerlink" href="#evdev.device.DeviceInfo.version" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-evdev.util">
+<span id="evdev-util"></span><h1>evdev.util<a class="headerlink" href="#module-evdev.util" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="evdev.util.list_devices">
+<tt class="descclassname">evdev.util.</tt><tt class="descname">list_devices</tt><big>(</big><em>input_device_dir='/dev/input'</em><big>)</big><a class="reference internal" href="_modules/evdev/util.html#list_devices"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.util.list_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>List readable character devices.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evdev.util.is_device">
+<tt class="descclassname">evdev.util.</tt><tt class="descname">is_device</tt><big>(</big><em>fn</em><big>)</big><a class="reference internal" href="_modules/evdev/util.html#is_device"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.util.is_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Determine if a file exists, is readable and is a character device.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="evdev.util.categorize">
+<tt class="descclassname">evdev.util.</tt><tt class="descname">categorize</tt><big>(</big><em>event</em><big>)</big><a class="reference internal" href="_modules/evdev/util.html#categorize"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.util.categorize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Categorize an event according to its type.</p>
+<p>The <a class="reference internal" href="#evdev.events.event_factory" title="evdev.events.event_factory"><tt class="xref py py-data docutils literal"><span class="pre">event_factory</span></tt></a> dictionary maps
+event types to their classes. If there is no corresponding key, the event
+is returned as it was.</p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-evdev.ecodes">
+<span id="evdev-ecodes"></span><h1>evdev.ecodes<a class="headerlink" href="#module-evdev.ecodes" title="Permalink to this headline">¶</a></h1>
+<p>This modules exposes most integer constants defined in <cite>linux/input.h</cite>.</p>
+<p>Exposed constants:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">KEY</span><span class="p">,</span> <span class="n">ABS</span><span class="p">,</span> <span class="n">REL</span><span class="p">,</span> <span class="n">SW</span><span class="p">,</span> <span class="n">MSC</span><span class="p">,</span> <span class="n">LED</span><span class="p">,</span> <span class="n">BTN</span><span class="p">,</span> <span class="n">REP</span><span class="p">,</span> <span class="n">SND</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">EV</span><span class="p">,</span> <span class="n">BUS</span><span class="p">,</span> <span class="n">SYN</span>
+</pre></div>
+</div>
+<p>This module also provides numerous reverse and forward mappings that are best
+illustrated by a few examples:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">KEY_A</span>
+<span class="go">30</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">ecodes</span><span class="p">[</span><span class="s">&#39;KEY_A&#39;</span><span class="p">]</span>
+<span class="go">30</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">KEY</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">&#39;KEY_A&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">REL</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&#39;REL_X&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">EV</span><span class="p">[</span><span class="n">evdev</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">]</span>
+<span class="go">&#39;EV_KEY&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">evdev</span><span class="o">.</span><span class="n">ecodes</span><span class="o">.</span><span class="n">bytype</span><span class="p">[</span><span class="n">EV_REL</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+<span class="go">&#39;REL_X&#39;</span>
+</pre></div>
+</div>
+<dl class="data">
+<dt id="evdev.ecodes.bytype">
+<tt class="descclassname">evdev.ecodes.</tt><tt class="descname">bytype</tt><em class="property"> = {0: {0: 'SYN_REPORT', 1: 'SYN_CONFIG', 2: 'SYN_MT_REPORT', 3: 'SYN_DROPPED'}, 1: {0: 'KEY_RESERVED', 1: 'KEY_ESC', 2: 'KEY_1', 3: 'KEY_2', 4: 'KEY_3', 5: 'KEY_4', 6: 'KEY_5', 7: 'KEY_6', 8: 'KEY_7', 9: 'KEY_8', 10: 'KEY_9', 11: 'KEY_0', 12: 'KEY_MINUS', 13: 'KEY_EQUAL', 14: 'KEY_BACKSPACE', 15: 'KEY_TAB', 16: 'KEY_Q', 17: 'KEY_W', 18: 'KEY_E', 19: 'KEY_R', 20: 'KEY_T', 21: 'KEY_Y', 22: 'KEY_U', 23: 'KEY_I', 24: 'KEY_O', 25: 'KEY_P', 26: 'KEY_LEFTBRACE', 27: 'KEY_RIGHTBRACE', 28: 'KEY_ENTER', 29: 'KEY_LEFTCTRL', 30: 'KEY_A', 31: 'KEY_S', 32: 'KEY_D', 33: 'KEY_F', 34: 'KEY_G', 35: 'KEY_H', 36: 'KEY_J', 37: 'KEY_K', 38: 'KEY_L', 39: 'KEY_SEMICOLON', 40: 'KEY_APOSTROPHE', 41: 'KEY_GRAVE', 42: 'KEY_LEFTSHIFT', 43: 'KEY_BACKSLASH', 44: 'KEY_Z', 45: 'KEY_X', 46: 'KEY_C', 47: 'KEY_V', 48: 'KEY_B', 49: 'KEY_N', 50: 'KEY_M', 51: 'KEY_COMMA', 52: 'KEY_DOT', 53: 'KEY_SLASH', 54: 'KEY_RIGHTSHIFT', 55: 'KEY_KPASTERISK', 56: 'KEY_LEFTALT', 57: 'KEY_SPACE', 58: 'KEY_CAPSLOCK', 59: 'KEY_F1', 60: 'KEY_F2', 61: 'KEY_F3', 62: 'KEY_F4', 63: 'KEY_F5', 64: 'KEY_F6', 65: 'KEY_F7', 66: 'KEY_F8', 67: 'KEY_F9', 68: 'KEY_F10', 69: 'KEY_NUMLOCK', 70: 'KEY_SCROLLLOCK', 71: 'KEY_KP7', 72: 'KEY_KP8', 73: 'KEY_KP9', 74: 'KEY_KPMINUS', 75: 'KEY_KP4', 76: 'KEY_KP5', 77: 'KEY_KP6', 78: 'KEY_KPPLUS', 79: 'KEY_KP1', 80: 'KEY_KP2', 81: 'KEY_KP3', 82: 'KEY_KP0', 83: 'KEY_KPDOT', 85: 'KEY_ZENKAKUHANKAKU', 86: 'KEY_102ND', 87: 'KEY_F11', 88: 'KEY_F12', 89: 'KEY_RO', 90: 'KEY_KATAKANA', 91: 'KEY_HIRAGANA', 92: 'KEY_HENKAN', 93: 'KEY_KATAKANAHIRAGANA', 94: 'KEY_MUHENKAN', 95: 'KEY_KPJPCOMMA', 96: 'KEY_KPENTER', 97: 'KEY_RIGHTCTRL', 98: 'KEY_KPSLASH', 99: 'KEY_SYSRQ', 100: 'KEY_RIGHTALT', 101: 'KEY_LINEFEED', 102: 'KEY_HOME', 103: 'KEY_UP', 104: 'KEY_PAGEUP', 105: 'KEY_LEFT', 106: 'KEY_RIGHT', 107: 'KEY_END', 108: 'KEY_DOWN', 109: 'KEY_PAGEDOWN', 110: 'KEY_INSERT', 111: 'KEY_DELETE', 112: 'KEY_MACRO', 113: 'KEY_MUTE', 114: 'KEY_VOLUMEDOWN', 115: 'KEY_VOLUMEUP', 116: 'KEY_POWER', 117: 'KEY_KPEQUAL', 118: 'KEY_KPPLUSMINUS', 119: 'KEY_PAUSE', 120: 'KEY_SCALE', 121: 'KEY_KPCOMMA', 122: 'KEY_HANGUEL', 123: 'KEY_HANJA', 124: 'KEY_YEN', 125: 'KEY_LEFTMETA', 126: 'KEY_RIGHTMETA', 127: 'KEY_COMPOSE', 128: 'KEY_STOP', 129: 'KEY_AGAIN', 130: 'KEY_PROPS', 131: 'KEY_UNDO', 132: 'KEY_FRONT', 133: 'KEY_COPY', 134: 'KEY_OPEN', 135: 'KEY_PASTE', 136: 'KEY_FIND', 137: 'KEY_CUT', 138: 'KEY_HELP', 139: 'KEY_MENU', 140: 'KEY_CALC', 141: 'KEY_SETUP', 142: 'KEY_SLEEP', 143: 'KEY_WAKEUP', 144: 'KEY_FILE', 145: 'KEY_SENDFILE', 146: 'KEY_DELETEFILE', 147: 'KEY_XFER', 148: 'KEY_PROG1', 149: 'KEY_PROG2', 150: 'KEY_WWW', 151: 'KEY_MSDOS', 152: 'KEY_SCREENLOCK', 153: 'KEY_DIRECTION', 154: 'KEY_CYCLEWINDOWS', 155: 'KEY_MAIL', 156: 'KEY_BOOKMARKS', 157: 'KEY_COMPUTER', 158: 'KEY_BACK', 159: 'KEY_FORWARD', 160: 'KEY_CLOSECD', 161: 'KEY_EJECTCD', 162: 'KEY_EJECTCLOSECD', 163: 'KEY_NEXTSONG', 164: 'KEY_PLAYPAUSE', 165: 'KEY_PREVIOUSSONG', 166: 'KEY_STOPCD', 167: 'KEY_RECORD', 168: 'KEY_REWIND', 169: 'KEY_PHONE', 170: 'KEY_ISO', 171: 'KEY_CONFIG', 172: 'KEY_HOMEPAGE', 173: 'KEY_REFRESH', 174: 'KEY_EXIT', 175: 'KEY_MOVE', 176: 'KEY_EDIT', 177: 'KEY_SCROLLUP', 178: 'KEY_SCROLLDOWN', 179: 'KEY_KPLEFTPAREN', 180: 'KEY_KPRIGHTPAREN', 181: 'KEY_NEW', 182: 'KEY_REDO', 183: 'KEY_F13', 184: 'KEY_F14', 185: 'KEY_F15', 186: 'KEY_F16', 187: 'KEY_F17', 188: 'KEY_F18', 189: 'KEY_F19', 190: 'KEY_F20', 191: 'KEY_F21', 192: 'KEY_F22', 193: 'KEY_F23', 194: 'KEY_F24', 200: 'KEY_PLAYCD', 201: 'KEY_PAUSECD', 202: 'KEY_PROG3', 203: 'KEY_PROG4', 204: 'KEY_DASHBOARD', 205: 'KEY_SUSPEND', 206: 'KEY_CLOSE', 207: 'KEY_PLAY', 208: 'KEY_FASTFORWARD', 209: 'KEY_BASSBOOST', 210: 'KEY_PRINT', 211: 'KEY_HP', 212: 'KEY_CAMERA', 213: 'KEY_SOUND', 214: 'KEY_QUESTION', 215: 'KEY_EMAIL', 216: 'KEY_CHAT', 217: 'KEY_SEARCH', 218: 'KEY_CONNECT', 219: 'KEY_FINANCE', 220: 'KEY_SPORT', 221: 'KEY_SHOP', 222: 'KEY_ALTERASE', 223: 'KEY_CANCEL', 224: 'KEY_BRIGHTNESSDOWN', 225: 'KEY_BRIGHTNESSUP', 226: 'KEY_MEDIA', 227: 'KEY_SWITCHVIDEOMODE', 228: 'KEY_KBDILLUMTOGGLE', 229: 'KEY_KBDILLUMDOWN', 230: 'KEY_KBDILLUMUP', 231: 'KEY_SEND', 232: 'KEY_REPLY', 233: 'KEY_FORWARDMAIL', 234: 'KEY_SAVE', 235: 'KEY_DOCUMENTS', 236: 'KEY_BATTERY', 237: 'KEY_BLUETOOTH', 238: 'KEY_WLAN', 239: 'KEY_UWB', 240: 'KEY_UNKNOWN', 241: 'KEY_VIDEO_NEXT', 242: 'KEY_VIDEO_PREV', 243: 'KEY_BRIGHTNESS_CYCLE', 244: 'KEY_BRIGHTNESS_ZERO', 245: 'KEY_DISPLAY_OFF', 246: 'KEY_WIMAX', 247: 'KEY_RFKILL', 248: 'KEY_MICMUTE', 256: 'BTN_MISC', 257: 'BTN_1', 258: 'BTN_2', 259: 'BTN_3', 260: 'BTN_4', 261: 'BTN_5', 262: 'BTN_6', 263: 'BTN_7', 264: 'BTN_8', 265: 'BTN_9', 272: 'BTN_MOUSE', 273: 'BTN_RIGHT', 274: 'BTN_MIDDLE', 275: 'BTN_SIDE', 276: 'BTN_EXTRA', 277: 'BTN_FORWARD', 278: 'BTN_BACK', 279: 'BTN_TASK', 288: 'BTN_TRIGGER', 289: 'BTN_THUMB', 290: 'BTN_THUMB2', 291: 'BTN_TOP', 292: 'BTN_TOP2', 293: 'BTN_PINKIE', 294: 'BTN_BASE', 295: 'BTN_BASE2', 296: 'BTN_BASE3', 297: 'BTN_BASE4', 298: 'BTN_BASE5', 299: 'BTN_BASE6', 303: 'BTN_DEAD', 304: 'BTN_GAMEPAD', 305: 'BTN_B', 306: 'BTN_C', 307: 'BTN_X', 308: 'BTN_Y', 309: 'BTN_Z', 310: 'BTN_TL', 311: 'BTN_TR', 312: 'BTN_TL2', 313: 'BTN_TR2', 314: 'BTN_SELECT', 315: 'BTN_START', 316: 'BTN_MODE', 317: 'BTN_THUMBL', 318: 'BTN_THUMBR', 320: 'BTN_TOOL_PEN', 321: 'BTN_TOOL_RUBBER', 322: 'BTN_TOOL_BRUSH', 323: 'BTN_TOOL_PENCIL', 324: 'BTN_TOOL_AIRBRUSH', 325: 'BTN_TOOL_FINGER', 326: 'BTN_TOOL_MOUSE', 327: 'BTN_TOOL_LENS', 328: 'BTN_TOOL_QUINTTAP', 330: 'BTN_TOUCH', 331: 'BTN_STYLUS', 332: 'BTN_STYLUS2', 333: 'BTN_TOOL_DOUBLETAP', 334: 'BTN_TOOL_TRIPLETAP', 335: 'BTN_TOOL_QUADTAP', 336: 'BTN_WHEEL', 337: 'BTN_GEAR_UP', 352: 'KEY_OK', 353: 'KEY_SELECT', 354: 'KEY_GOTO', 355: 'KEY_CLEAR', 356: 'KEY_POWER2', 357: 'KEY_OPTION', 358: 'KEY_INFO', 359: 'KEY_TIME', 360: 'KEY_VENDOR', 361: 'KEY_ARCHIVE', 362: 'KEY_PROGRAM', 363: 'KEY_CHANNEL', 364: 'KEY_FAVORITES', 365: 'KEY_EPG', 366: 'KEY_PVR', 367: 'KEY_MHP', 368: 'KEY_LANGUAGE', 369: 'KEY_TITLE', 370: 'KEY_SUBTITLE', 371: 'KEY_ANGLE', 372: 'KEY_ZOOM', 373: 'KEY_MODE', 374: 'KEY_KEYBOARD', 375: 'KEY_SCREEN', 376: 'KEY_PC', 377: 'KEY_TV', 378: 'KEY_TV2', 379: 'KEY_VCR', 380: 'KEY_VCR2', 381: 'KEY_SAT', 382: 'KEY_SAT2', 383: 'KEY_CD', 384: 'KEY_TAPE', 385: 'KEY_RADIO', 386: 'KEY_TUNER', 387: 'KEY_PLAYER', 388: 'KEY_TEXT', 389: 'KEY_DVD', 390: 'KEY_AUX', 391: 'KEY_MP3', 392: 'KEY_AUDIO', 393: 'KEY_VIDEO', 394: 'KEY_DIRECTORY', 395: 'KEY_LIST', 396: 'KEY_MEMO', 397: 'KEY_CALENDAR', 398: 'KEY_RED', 399: 'KEY_GREEN', 400: 'KEY_YELLOW', 401: 'KEY_BLUE', 402: 'KEY_CHANNELUP', 403: 'KEY_CHANNELDOWN', 404: 'KEY_FIRST', 405: 'KEY_LAST', 406: 'KEY_AB', 407: 'KEY_NEXT', 408: 'KEY_RESTART', 409: 'KEY_SLOW', 410: 'KEY_SHUFFLE', 411: 'KEY_BREAK', 412: 'KEY_PREVIOUS', 413: 'KEY_DIGITS', 414: 'KEY_TEEN', 415: 'KEY_TWEN', 416: 'KEY_VIDEOPHONE', 417: 'KEY_GAMES', 418: 'KEY_ZOOMIN', 419: 'KEY_ZOOMOUT', 420: 'KEY_ZOOMRESET', 421: 'KEY_WORDPROCESSOR', 422: 'KEY_EDITOR', 423: 'KEY_SPREADSHEET', 424: 'KEY_GRAPHICSEDITOR', 425: 'KEY_PRESENTATION', 426: 'KEY_DATABASE', 427: 'KEY_NEWS', 428: 'KEY_VOICEMAIL', 429: 'KEY_ADDRESSBOOK', 430: 'KEY_MESSENGER', 431: 'KEY_DISPLAYTOGGLE', 432: 'KEY_SPELLCHECK', 433: 'KEY_LOGOFF', 434: 'KEY_DOLLAR', 435: 'KEY_EURO', 436: 'KEY_FRAMEBACK', 437: 'KEY_FRAMEFORWARD', 438: 'KEY_CONTEXT_MENU', 439: 'KEY_MEDIA_REPEAT', 440: 'KEY_10CHANNELSUP', 441: 'KEY_10CHANNELSDOWN', 442: 'KEY_IMAGES', 448: 'KEY_DEL_EOL', 449: 'KEY_DEL_EOS', 450: 'KEY_INS_LINE', 451: 'KEY_DEL_LINE', 464: 'KEY_FN', 465: 'KEY_FN_ESC', 466: 'KEY_FN_F1', 467: 'KEY_FN_F2', 468: 'KEY_FN_F3', 469: 'KEY_FN_F4', 470: 'KEY_FN_F5', 471: 'KEY_FN_F6', 472: 'KEY_FN_F7', 473: 'KEY_FN_F8', 474: 'KEY_FN_F9', 475: 'KEY_FN_F10', 476: 'KEY_FN_F11', 477: 'KEY_FN_F12', 478: 'KEY_FN_1', 479: 'KEY_FN_2', 480: 'KEY_FN_D', 481: 'KEY_FN_E', 482: 'KEY_FN_F', 483: 'KEY_FN_S', 484: 'KEY_FN_B', 497: 'KEY_BRL_DOT1', 498: 'KEY_BRL_DOT2', 499: 'KEY_BRL_DOT3', 500: 'KEY_BRL_DOT4', 501: 'KEY_BRL_DOT5', 502: 'KEY_BRL_DOT6', 503: 'KEY_BRL_DOT7', 504: 'KEY_BRL_DOT8', 505: 'KEY_BRL_DOT9', 506: 'KEY_BRL_DOT10', 512: 'KEY_NUMERIC_0', 513: 'KEY_NUMERIC_1', 514: 'KEY_NUMERIC_2', 515: 'KEY_NUMERIC_3', 516: 'KEY_NUMERIC_4', 517: 'KEY_NUMERIC_5', 518: 'KEY_NUMERIC_6', 519: 'KEY_NUMERIC_7', 520: 'KEY_NUMERIC_8', 521: 'KEY_NUMERIC_9', 522: 'KEY_NUMERIC_STAR', 523: 'KEY_NUMERIC_POUND', 528: 'KEY_CAMERA_FOCUS', 529: 'KEY_WPS_BUTTON', 530: 'KEY_TOUCHPAD_TOGGLE', 531: 'KEY_TOUCHPAD_ON', 532: 'KEY_TOUCHPAD_OFF', 533: 'KEY_CAMERA_ZOOMIN', 534: 'KEY_CAMERA_ZOOMOUT', 535: 'KEY_CAMERA_UP', 536: 'KEY_CAMERA_DOWN', 537: 'KEY_CAMERA_LEFT', 538: 'KEY_CAMERA_RIGHT', 704: 'BTN_TRIGGER_HAPPY1', 705: 'BTN_TRIGGER_HAPPY2', 706: 'BTN_TRIGGER_HAPPY3', 707: 'BTN_TRIGGER_HAPPY4', 708: 'BTN_TRIGGER_HAPPY5', 709: 'BTN_TRIGGER_HAPPY6', 710: 'BTN_TRIGGER_HAPPY7', 711: 'BTN_TRIGGER_HAPPY8', 712: 'BTN_TRIGGER_HAPPY9', 713: 'BTN_TRIGGER_HAPPY10', 714: 'BTN_TRIGGER_HAPPY11', 715: 'BTN_TRIGGER_HAPPY12', 716: 'BTN_TRIGGER_HAPPY13', 717: 'BTN_TRIGGER_HAPPY14', 718: 'BTN_TRIGGER_HAPPY15', 719: 'BTN_TRIGGER_HAPPY16', 720: 'BTN_TRIGGER_HAPPY17', 721: 'BTN_TRIGGER_HAPPY18', 722: 'BTN_TRIGGER_HAPPY19', 723: 'BTN_TRIGGER_HAPPY20', 724: 'BTN_TRIGGER_HAPPY21', 725: 'BTN_TRIGGER_HAPPY22', 726: 'BTN_TRIGGER_HAPPY23', 727: 'BTN_TRIGGER_HAPPY24', 728: 'BTN_TRIGGER_HAPPY25', 729: 'BTN_TRIGGER_HAPPY26', 730: 'BTN_TRIGGER_HAPPY27', 731: 'BTN_TRIGGER_HAPPY28', 732: 'BTN_TRIGGER_HAPPY29', 733: 'BTN_TRIGGER_HAPPY30', 734: 'BTN_TRIGGER_HAPPY31', 735: 'BTN_TRIGGER_HAPPY32', 736: 'BTN_TRIGGER_HAPPY33', 737: 'BTN_TRIGGER_HAPPY34', 738: 'BTN_TRIGGER_HAPPY35', 739: 'BTN_TRIGGER_HAPPY36', 740: 'BTN_TRIGGER_HAPPY37', 741: 'BTN_TRIGGER_HAPPY38', 742: 'BTN_TRIGGER_HAPPY39', 743: 'BTN_TRIGGER_HAPPY40', 767: 'KEY_MAX', 768: 'KEY_CNT'}, 2: {0: 'REL_X', 1: 'REL_Y', 2: 'REL_Z', 3: 'REL_RX', 4: 'REL_RY', 5: 'REL_RZ', 6: 'REL_HWHEEL', 7: 'REL_DIAL', 8: 'REL_WHEEL', 9: 'REL_MISC', 15: 'REL_MAX', 16: 'REL_CNT'}, 3: {0: 'ABS_X', 1: 'ABS_Y', 2: 'ABS_Z', 3: 'ABS_RX', 4: 'ABS_RY', 5: 'ABS_RZ', 6: 'ABS_THROTTLE', 7: 'ABS_RUDDER', 8: 'ABS_WHEEL', 9: 'ABS_GAS', 10: 'ABS_BRAKE', 16: 'ABS_HAT0X', 17: 'ABS_HAT0Y', 18: 'ABS_HAT1X', 19: 'ABS_HAT1Y', 20: 'ABS_HAT2X', 21: 'ABS_HAT2Y', 22: 'ABS_HAT3X', 23: 'ABS_HAT3Y', 24: 'ABS_PRESSURE', 25: 'ABS_DISTANCE', 26: 'ABS_TILT_X', 27: 'ABS_TILT_Y', 28: 'ABS_TOOL_WIDTH', 32: 'ABS_VOLUME', 40: 'ABS_MISC', 47: 'ABS_MT_SLOT', 48: 'ABS_MT_TOUCH_MAJOR', 49: 'ABS_MT_TOUCH_MINOR', 50: 'ABS_MT_WIDTH_MAJOR', 51: 'ABS_MT_WIDTH_MINOR', 52: 'ABS_MT_ORIENTATION', 53: 'ABS_MT_POSITION_X', 54: 'ABS_MT_POSITION_Y', 55: 'ABS_MT_TOOL_TYPE', 56: 'ABS_MT_BLOB_ID', 57: 'ABS_MT_TRACKING_ID', 58: 'ABS_MT_PRESSURE', 59: 'ABS_MT_DISTANCE', 63: 'ABS_MAX', 64: 'ABS_CNT'}, 4: {0: 'MSC_SERIAL', 1: 'MSC_PULSELED', 2: 'MSC_GESTURE', 3: 'MSC_RAW', 4: 'MSC_SCAN', 7: 'MSC_MAX', 8: 'MSC_CNT'}, 5: {0: 'SW_LID', 1: 'SW_TABLET_MODE', 2: 'SW_HEADPHONE_INSERT', 3: 'SW_RFKILL_ALL', 4: 'SW_MICROPHONE_INSERT', 5: 'SW_DOCK', 6: 'SW_LINEOUT_INSERT', 7: 'SW_JACK_PHYSICAL_INSERT', 8: 'SW_VIDEOOUT_INSERT', 9: 'SW_CAMERA_LENS_COVER', 10: 'SW_KEYPAD_SLIDE', 11: 'SW_FRONT_PROXIMITY', 12: 'SW_ROTATE_LOCK', 13: 'SW_LINEIN_INSERT', 15: 'SW_MAX', 16: 'SW_CNT'}, 17: {0: 'LED_NUML', 1: 'LED_CAPSL', 2: 'LED_SCROLLL', 3: 'LED_COMPOSE', 4: 'LED_KANA', 5: 'LED_SLEEP', 6: 'LED_SUSPEND', 7: 'LED_MUTE', 8: 'LED_MISC', 9: 'LED_MAIL', 10: 'LED_CHARGING', 15: 'LED_MAX', 16: 'LED_CNT'}, 20: {0: 'REP_DELAY', 1: 'REP_PERIOD', 2: 'REP_CNT'}, 18: {0: 'SND_CLICK', 1: 'SND_BELL', 2: 'SND_TONE', 8: 'SND_CNT', 7: 'SND_MAX'}}</em><a class="headerlink" href="#evdev.ecodes.bytype" title="Permalink to this definition">¶</a></dt>
+<dd><p>mapping of event types to other value/name mappings</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="evdev.ecodes.ecodes">
+<tt class="descclassname">evdev.ecodes.</tt><tt class="descname">ecodes</tt><em class="property"> = {'KEY_END': 107, 'KEY_KPDOT': 83, 'ABS_MT_TOUCH_MINOR': 49, 'KEY_CNT': 768, 'KEY_HANJA': 123, 'KEY_SHOP': 221, 'ABS_MT_DISTANCE': 59, 'ABS_TILT_Y': 27, 'ABS_TILT_X': 26, 'ID_VERSION': 3, 'KEY_CAMERA_RIGHT': 538, 'KEY_BREAK': 411, 'MSC_MAX': 7, 'KEY_MIN_INTERESTING': 113, 'SYN_MT_REPORT': 2, 'BTN_MISC': 256, 'SW_ROTATE_LOCK': 12, 'KEY_EMAIL': 215, 'BTN_TOOL_PEN': 320, 'ABS_MAX': 63, 'KEY_BRL_DOT4': 500, 'KEY_BRL_DOT5': 501, 'KEY_BRL_DOT6': 502, 'KEY_BRL_DOT7': 503, 'KEY_BRL_DOT1': 497, 'KEY_BRL_DOT2': 498, 'BTN_TOOL_RUBBER': 321, 'BTN_LEFT': 272, 'KEY_BRL_DOT8': 504, 'KEY_BRL_DOT9': 505, 'KEY_SLOW': 409, 'KEY_DISPLAYTOGGLE': 431, 'BTN_TOOL_DOUBLETAP': 333, 'LED_KANA': 4, 'ABS_MT_TOUCH_MAJOR': 48, 'BTN_DIGI': 320, 'BUS_ISAPNP': 2, 'KEY_RIGHTBRACE': 27, 'KEY_PAUSE': 119, 'ABS_MISC': 40, 'KEY_MICMUTE': 248, 'BUS_USB': 3, 'KEY_CALENDAR': 397, 'KEY_FN_F9': 474, 'KEY_OK': 352, 'KEY_WORDPROCESSOR': 421, 'ABS_BRAKE': 10, 'KEY_BLUETOOTH': 237, 'KEY_INFO': 358, 'KEY_KPMINUS': 74, 'KEY_INS_LINE': 450, 'KEY_NUMLOCK': 69, 'KEY_FN_F12': 477, 'KEY_MEDIA_REPEAT': 439, 'EV_LED': 17, 'KEY_FN_F10': 475, 'KEY_DOCUMENTS': 235, 'KEY_VCR2': 380, 'ABS_TOOL_WIDTH': 28, 'KEY_2': 3, 'REL_WHEEL': 8, 'KEY_VOICEMAIL': 428, 'KEY_FN_F1': 466, 'BTN_DEAD': 303, 'KEY_KPCOMMA': 121, 'KEY_PROGRAM': 362, 'SND_MAX': 7, 'BUS_ADB': 23, 'SW_RADIO': 3, 'KEY_QUESTION': 214, 'KEY_ZOOMIN': 418, 'ABS_HAT1X': 18, 'ABS_HAT1Y': 19, 'KEY_NUMERIC_POUND': 523, 'MSC_PULSELED': 1, 'BUS_ATARI': 27, 'KEY_AB': 406, 'KEY_PROG4': 203, 'LED_CAPSL': 1, 'KEY_SPACE': 57, 'KEY_PROG1': 148, 'KEY_PROG3': 202, 'KEY_PROG2': 149, 'KEY_FIRST': 404, 'KEY_CANCEL': 223, 'ABS_MT_WIDTH_MAJOR': 50, 'BUS_BLUETOOTH': 5, 'KEY_RED': 398, 'BTN_THUMBL': 317, 'BTN_TOOL_AIRBRUSH': 324, 'KEY_BATTERY': 236, 'EV_PWR': 22, 'EV_SYN': 0, 'ID_BUS': 0, 'KEY_TEEN': 414, 'BUS_VIRTUAL': 6, 'KEY_REWIND': 168, 'KEY_LEFTCTRL': 29, 'KEY_APOSTROPHE': 40, 'KEY_KBDILLUMDOWN': 229, 'KEY_ZOOM': 372, 'BUS_I8042': 17, 'KEY_HP': 211, 'KEY_MINUS': 12, 'KEY_TOUCHPAD_OFF': 532, 'MSC_CNT': 8, 'ABS_MT_SLOT': 47, 'EV_VERSION': 65537, 'ABS_THROTTLE': 6, 'KEY_CYCLEWINDOWS': 154, 'KEY_FAVORITES': 364, 'BTN_TR2': 313, 'KEY_SCREENLOCK': 152, 'KEY_DELETEFILE': 146, 'KEY_STOP': 128, 'EV_MSC': 4, 'KEY_CLEAR': 355, 'ABS_HAT2Y': 21, 'ABS_HAT2X': 20, 'KEY_U': 22, 'KEY_COMPOSE': 127, 'KEY_REDO': 182, 'BTN_THUMBR': 318, 'KEY_KATAKANA': 90, 'REP_DELAY': 0, 'KEY_CAMERA_UP': 535, 'ABS_RUDDER': 7, 'KEY_MAX': 767, 'KEY_RIGHT': 106, 'BTN_TRIGGER_HAPPY38': 741, 'BTN_TRIGGER_HAPPY39': 742, 'BTN_FORWARD': 277, 'KEY_BRIGHTNESSUP': 225, 'BTN_TRIGGER_HAPPY30': 733, 'BTN_TRIGGER_HAPPY31': 734, 'BTN_TRIGGER_HAPPY32': 735, 'BTN_TRIGGER_HAPPY33': 736, 'BTN_TRIGGER_HAPPY34': 737, 'BTN_TRIGGER_HAPPY35': 738, 'BTN_TRIGGER_HAPPY36': 739, 'BTN_TRIGGER_HAPPY37': 740, 'KEY_HANGEUL': 122, 'KEY_KBDILLUMTOGGLE': 228, 'KEY_W': 17, 'BUS_SPI': 28, 'BTN_TRIGGER_HAPPY8': 711, 'BTN_TRIGGER_HAPPY9': 712, 'KEY_KEYBOARD': 374, 'BTN_TRIGGER_HAPPY1': 704, 'BTN_TRIGGER_HAPPY2': 705, 'BTN_TRIGGER_HAPPY3': 706, 'BTN_TRIGGER_HAPPY4': 707, 'BTN_TRIGGER_HAPPY5': 708, 'BTN_TRIGGER_HAPPY6': 709, 'BTN_TRIGGER_HAPPY7': 710, 'KEY_MP3': 391, 'KEY_BACKSLASH': 43, 'KEY_KPJPCOMMA': 95, 'KEY_GRAVE': 41, 'KEY_FRONT': 132, 'KEY_MODE': 373, 'BTN_THUMB2': 290, 'SW_LINEOUT_INSERT': 6, 'KEY_LOGOFF': 433, 'KEY_KPASTERISK': 55, 'KEY_RFKILL': 247, 'KEY_REPLY': 232, 'KEY_FN_1': 478, 'KEY_FN_2': 479, 'KEY_WWW': 150, 'KEY_RIGHTALT': 100, 'EV_MAX': 31, 'KEY_10CHANNELSUP': 440, 'KEY_SCROLLDOWN': 178, 'ABS_GAS': 9, 'KEY_SYSRQ': 99, 'BTN_STYLUS': 331, 'BUS_PCI': 1, 'KEY_SPELLCHECK': 432, 'KEY_ZOOMOUT': 419, 'KEY_UNKNOWN': 240, 'KEY_MOVE': 175, 'KEY_SAVE': 234, 'KEY_BACKSPACE': 14, 'KEY_EXIT': 174, 'KEY_MUHENKAN': 94, 'KEY_BRL_DOT3': 499, 'KEY_FN_E': 481, 'KEY_FN_D': 480, 'KEY_FN_F': 482, 'KEY_FN_S': 483, 'KEY_WIMAX': 246, 'KEY_RESERVED': 0, 'ABS_MT_ORIENTATION': 52, 'KEY_MEMO': 396, 'SYN_REPORT': 0, 'BTN_THUMB': 289, 'KEY_YELLOW': 400, 'KEY_PLAY': 207, 'KEY_SLASH': 53, 'KEY_PROPS': 130, 'BTN_TASK': 279, 'BTN_GEAR_UP': 337, 'KEY_FASTFORWARD': 208, 'KEY_KPEQUAL': 117, 'EV_ABS': 3, 'KEY_CHANNELDOWN': 403, 'BUS_AMIGA': 22, 'KEY_FILE': 144, 'KEY_CAMERA_DOWN': 536, 'BTN_BACK': 278, 'SW_HEADPHONE_INSERT': 2, 'KEY_SUSPEND': 205, 'KEY_ARCHIVE': 361, 'SW_LID': 0, 'KEY_SPORT': 220, 'BUS_GAMEPORT': 20, 'EV_KEY': 1, 'KEY_MACRO': 112, 'SW_CAMERA_LENS_COVER': 9, 'BUS_HIL': 4, 'MSC_SCAN': 4, 'KEY_VOLUMEUP': 115, 'KEY_LIST': 395, 'KEY_SCROLLUP': 177, 'LED_CHARGING': 10, 'KEY_CONFIG': 171, 'BTN_TOP2': 292, 'KEY_GOTO': 354, 'LED_COMPOSE': 3, 'BTN_TOOL_BRUSH': 322, 'REL_RX': 3, 'REL_RY': 4, 'REL_RZ': 5, 'EV_SND': 18, 'SW_TABLET_MODE': 1, 'KEY_MSDOS': 151, 'KEY_ISO': 170, 'KEY_PRINT': 210, 'BUS_PARPORT': 21, 'KEY_DOWN': 108, 'KEY_DISPLAY_OFF': 245, 'SW_DOCK': 5, 'ABS_MT_TOOL_TYPE': 55, 'BTN_MODE': 316, 'KEY_PASTE': 135, 'KEY_PAGEDOWN': 109, 'KEY_EURO': 435, 'KEY_SAT2': 382, 'KEY_CLOSE': 206, 'KEY_SAT': 381, 'SW_VIDEOOUT_INSERT': 8, 'KEY_RECORD': 167, 'KEY_SUBTITLE': 370, 'KEY_SWITCHVIDEOMODE': 227, 'KEY_CAPSLOCK': 58, 'KEY_SPREADSHEET': 423, 'KEY_TWEN': 415, 'KEY_LEFTALT': 56, 'KEY_HOMEPAGE': 172, 'KEY_VCR': 379, 'KEY_EJECTCLOSECD': 162, 'KEY_PLAYER': 387, 'LED_MISC': 8, 'KEY_F15': 185, 'KEY_MENU': 139, 'REL_CNT': 16, 'KEY_LINEFEED': 101, 'KEY_F13': 183, 'KEY_BACK': 158, 'KEY_ANGLE': 371, 'LED_CNT': 16, 'EV_CNT': 32, 'KEY_SOUND': 213, 'KEY_DVD': 389, 'KEY_ZOOMRESET': 420, 'ABS_VOLUME': 32, 'ABS_MT_POSITION_X': 53, 'ABS_MT_POSITION_Y': 54, 'KEY_PRESENTATION': 425, 'ABS_MT_TRACKING_ID': 57, 'KEY_KATAKANAHIRAGANA': 93, 'KEY_DIRECTION': 153, 'BTN_TOOL_LENS': 327, 'KEY_REFRESH': 173, 'ABS_CNT': 64, 'BTN_PINKIE': 293, 'KEY_MEDIA': 226, 'LED_MAIL': 9, 'KEY_NUMERIC_STAR': 522, 'KEY_MUTE': 113, 'KEY_102ND': 86, 'BTN_TRIGGER_HAPPY11': 714, 'KEY_KPRIGHTPAREN': 180, 'REP_MAX': 1, 'REP_PERIOD': 1, 'BTN_TOOL_MOUSE': 326, 'KEY_KBDILLUMUP': 230, 'KEY_DATABASE': 426, 'ID_VENDOR': 1, 'KEY_SLEEP': 142, 'KEY_UWB': 239, 'KEY_BOOKMARKS': 156, 'SW_KEYPAD_SLIDE': 10, 'BTN_TOUCH': 330, 'BTN_BASE3': 296, 'BTN_BASE2': 295, 'BTN_BASE5': 298, 'BTN_BASE4': 297, 'BTN_BASE6': 299, 'KEY_HELP': 138, 'ABS_HAT3X': 22, 'ABS_HAT3Y': 23, 'REL_MAX': 15, 'ABS_PRESSURE': 24, 'KEY_TOUCHPAD_TOGGLE': 530, 'REL_DIAL': 7, 'KEY_CHAT': 216, 'KEY_EPG': 365, 'BUS_I2C': 24, 'KEY_LANGUAGE': 368, 'KEY_TV': 377, 'KEY_VIDEO': 393, 'KEY_PAUSECD': 201, 'LED_SUSPEND': 6, 'KEY_TUNER': 386, 'KEY_SENDFILE': 145, 'KEY_FRAMEFORWARD': 437, 'EV_FF_STATUS': 23, 'LED_MAX': 15, 'BTN_WHEEL': 336, 'SW_FRONT_PROXIMITY': 11, 'KEY_F18': 188, 'KEY_F19': 189, 'KEY_F16': 186, 'KEY_F17': 187, 'KEY_F14': 184, 'KEY_ENTER': 28, 'KEY_F12': 88, 'KEY_AUX': 390, 'KEY_F10': 68, 'KEY_F11': 87, 'KEY_F4': 62, 'KEY_F5': 63, 'KEY_F6': 64, 'KEY_F7': 65, 'KEY_F1': 59, 'KEY_F2': 60, 'KEY_F3': 61, 'BTN_GEAR_DOWN': 336, 'KEY_CHANNELUP': 402, 'KEY_F8': 66, 'KEY_F9': 67, 'KEY_TAPE': 384, 'KEY_PC': 376, 'KEY_TEXT': 388, 'BTN_TRIGGER_HAPPY40': 743, 'LED_NUML': 0, 'KEY_MESSENGER': 430, 'KEY_EJECTCD': 161, 'KEY_NUMERIC_3': 515, 'KEY_NUMERIC_2': 514, 'KEY_NUMERIC_5': 517, 'KEY_NUMERIC_4': 516, 'KEY_NUMERIC_7': 519, 'KEY_NUMERIC_6': 518, 'KEY_NUMERIC_9': 521, 'KEY_NUMERIC_8': 520, 'KEY_FN': 464, 'MSC_RAW': 3, 'KEY_CAMERA_ZOOMOUT': 534, 'BTN_RIGHT': 273, 'KEY_STOPCD': 166, 'KEY_PAGEUP': 104, 'KEY_NUMERIC_1': 513, 'KEY_GRAPHICSEDITOR': 424, 'KEY_NUMERIC_0': 512, 'REL_HWHEEL': 6, 'KEY_POWER': 116, 'KEY_DIGITS': 413, 'KEY_SELECT': 353, 'KEY_SEARCH': 217, 'SW_RFKILL_ALL': 3, 'KEY_HIRAGANA': 91, 'KEY_HOME': 102, 'KEY_E': 18, 'KEY_D': 32, 'KEY_G': 34, 'KEY_F': 33, 'KEY_A': 30, 'KEY_C': 46, 'KEY_B': 48, 'KEY_M': 50, 'KEY_L': 38, 'KEY_O': 24, 'KEY_N': 49, 'KEY_I': 23, 'KEY_H': 35, 'KEY_K': 37, 'KEY_J': 36, 'ABS_X': 0, 'ABS_Y': 1, 'ABS_Z': 2, 'KEY_BRIGHTNESSDOWN': 224, 'KEY_Q': 16, 'KEY_P': 25, 'KEY_S': 31, 'KEY_KPPLUS': 78, 'BTN_TL': 310, 'KEY_PREVIOUS': 412, 'KEY_DIRECTORY': 394, 'KEY_X': 45, 'KEY_Z': 44, 'BTN_TL2': 312, 'KEY_BLUE': 401, 'KEY_DELETE': 111, 'BTN_TOOL_FINGER': 325, 'KEY_CALC': 140, 'REP_CNT': 2, 'KEY_BRIGHTNESS_ZERO': 244, 'KEY_VIDEOPHONE': 416, 'ABS_RZ': 5, 'ABS_RY': 4, 'ABS_RX': 3, 'KEY_SCROLLLOCK': 70, 'KEY_BRL_DOT10': 506, 'KEY_MAIL': 155, 'BUS_HOST': 25, 'KEY_KPPLUSMINUS': 118, 'KEY_POWER2': 356, 'KEY_KP4': 75, 'KEY_KP5': 76, 'KEY_KP6': 77, 'KEY_KP7': 71, 'KEY_KP0': 82, 'KEY_KP1': 79, 'KEY_KP2': 80, 'KEY_KP3': 81, 'MSC_GESTURE': 2, 'KEY_KP8': 72, 'KEY_KP9': 73, 'KEY_5': 6, 'KEY_4': 5, 'KEY_7': 8, 'KEY_6': 7, 'KEY_1': 2, 'KEY_0': 11, 'KEY_3': 4, 'KEY_FN_F11': 476, 'KEY_CONTEXT_MENU': 438, 'KEY_9': 10, 'KEY_8': 9, 'KEY_VOLUMEDOWN': 114, 'KEY_CD': 383, 'KEY_LEFTMETA': 125, 'KEY_VIDEO_PREV': 242, 'KEY_LEFTBRACE': 26, 'KEY_EDIT': 176, 'EV_REL': 2, 'KEY_10CHANNELSDOWN': 441, 'KEY_OPTION': 357, 'BTN_TRIGGER': 288, 'EV_REP': 20, 'KEY_EQUAL': 13, 'KEY_UNDO': 131, 'KEY_WLAN': 238, 'KEY_SEND': 231, 'SND_CNT': 8, 'KEY_F24': 194, 'KEY_F23': 193, 'KEY_F22': 192, 'KEY_F21': 191, 'KEY_F20': 190, 'KEY_GAMES': 417, 'SW_MAX': 15, 'KEY_OPEN': 134, 'BTN_STYLUS2': 332, 'KEY_LAST': 405, 'KEY_FINANCE': 219, 'SND_BELL': 1, 'ID_PRODUCT': 2, 'KEY_COMMA': 51, 'KEY_EDITOR': 422, 'KEY_CAMERA': 212, 'BTN_TRIGGER_HAPPY12': 715, 'BTN_TRIGGER_HAPPY13': 716, 'BTN_TRIGGER_HAPPY10': 713, 'BTN_TOP': 291, 'BTN_TRIGGER_HAPPY16': 719, 'BTN_TRIGGER_HAPPY17': 720, 'BTN_TRIGGER_HAPPY14': 717, 'BTN_TRIGGER_HAPPY15': 718, 'BTN_TRIGGER_HAPPY18': 721, 'BTN_TRIGGER_HAPPY19': 722, 'ABS_HAT0Y': 17, 'ABS_HAT0X': 16, 'BTN_GAMEPAD': 304, 'KEY_COMPUTER': 157, 'ABS_MT_BLOB_ID': 56, 'KEY_MHP': 367, 'LED_MUTE': 7, 'BTN_BASE': 294, 'KEY_VIDEO_NEXT': 241, 'KEY_UP': 103, 'BTN_TR': 311, 'KEY_VENDOR': 360, 'KEY_CAMERA_FOCUS': 528, 'REL_Y': 1, 'REL_X': 0, 'REL_Z': 2, 'KEY_CAMERA_ZOOMIN': 533, 'SW_LINEIN_INSERT': 13, 'KEY_RIGHTMETA': 126, 'BUS_RS232': 19, 'BTN_EXTRA': 276, 'KEY_TOUCHPAD_ON': 531, 'KEY_ESC': 1, 'KEY_SEMICOLON': 39, 'MSC_SERIAL': 0, 'KEY_T': 20, 'BTN_TOOL_QUINTTAP': 328, 'BTN_TOOL_PENCIL': 323, 'KEY_V': 47, 'KEY_CAMERA_LEFT': 537, 'LED_SCROLLL': 2, 'KEY_PHONE': 169, 'ABS_DISTANCE': 25, 'KEY_FN_B': 484, 'KEY_R': 19, 'KEY_AGAIN': 129, 'KEY_ALTERASE': 222, 'KEY_CHANNEL': 363, 'KEY_FRAMEBACK': 436, 'KEY_FORWARD': 159, 'KEY_AUDIO': 392, 'BTN_SELECT': 314, 'KEY_DEL_LINE': 451, 'KEY_YEN': 124, 'KEY_KPENTER': 96, 'KEY_ADDRESSBOOK': 429, 'KEY_Y': 21, 'KEY_PREVIOUSSONG': 165, 'KEY_TIME': 359, 'BTN_SIDE': 275, 'KEY_TITLE': 369, 'KEY_FN_F8': 473, 'BTN_MOUSE': 272, 'KEY_FN_F4': 469, 'KEY_FN_F5': 470, 'KEY_FN_F6': 471, 'KEY_FN_F7': 472, 'KEY_DEL_EOL': 448, 'KEY_COFFEE': 152, 'KEY_FN_F3': 468, 'KEY_DASHBOARD': 204, 'KEY_DEL_EOS': 449, 'KEY_XFER': 147, 'KEY_NEW': 181, 'EV_SW': 5, 'KEY_HANGUEL': 122, 'KEY_TV2': 378, 'KEY_PLAYCD': 200, 'KEY_TAB': 15, 'KEY_LEFT': 105, 'KEY_IMAGES': 442, 'KEY_RIGHTSHIFT': 54, 'KEY_HENKAN': 92, 'BTN_JOYSTICK': 288, 'BTN_7': 263, 'KEY_FORWARDMAIL': 233, 'KEY_GREEN': 399, 'KEY_COPY': 133, 'KEY_KPLEFTPAREN': 179, 'SYN_CONFIG': 1, 'KEY_WPS_BUTTON': 529, 'KEY_CLOSECD': 160, 'EV_FF': 21, 'KEY_BASSBOOST': 209, 'KEY_RESTART': 408, 'KEY_WAKEUP': 143, 'KEY_BRIGHTNESS_CYCLE': 243, 'KEY_KPSLASH': 98, 'KEY_RADIO': 385, 'REL_MISC': 9, 'SND_TONE': 2, 'ABS_MT_WIDTH_MINOR': 51, 'SW_MICROPHONE_INSERT': 4, 'LED_SLEEP': 5, 'KEY_FIND': 136, 'KEY_NEXT': 407, 'KEY_NEWS': 427, 'SW_JACK_PHYSICAL_INSERT': 7, 'KEY_FN_F2': 467, 'BTN_START': 315, 'BTN_TRIGGER_HAPPY': 704, 'BTN_TRIGGER_HAPPY29': 732, 'BTN_TRIGGER_HAPPY28': 731, 'KEY_FN_ESC': 465, 'BTN_TRIGGER_HAPPY23': 726, 'BTN_TRIGGER_HAPPY22': 725, 'BTN_TRIGGER_HAPPY21': 724, 'BTN_TRIGGER_HAPPY20': 723, 'BTN_TRIGGER_HAPPY27': 730, 'BTN_TRIGGER_HAPPY26': 729, 'BTN_TRIGGER_HAPPY25': 728, 'BTN_TRIGGER_HAPPY24': 727, 'KEY_DOLLAR': 434, 'ABS_MT_PRESSURE': 58, 'KEY_SCREEN': 375, 'KEY_CUT': 137, 'KEY_PLAYPAUSE': 164, 'BTN_A': 304, 'BTN_B': 305, 'BTN_C': 306, 'KEY_ZENKAKUHANKAKU': 85, 'BTN_TOOL_QUADTAP': 335, 'KEY_LEFTSHIFT': 42, 'BTN_X': 307, 'BTN_Y': 308, 'BTN_Z': 309, 'SW_CNT': 16, 'BUS_ISA': 16, 'ABS_WHEEL': 8, 'KEY_SETUP': 141, 'BUS_XTKBD': 18, 'SYN_DROPPED': 3, 'KEY_SCALE': 120, 'BTN_0': 256, 'BTN_1': 257, 'BTN_2': 258, 'BTN_3': 259, 'BTN_4': 260, 'BTN_5': 261, 'BTN_6': 262, 'KEY_CONNECT': 218, 'BTN_8': 264, 'BTN_9': 265, 'KEY_DOT': 52, 'BTN_TOOL_TRIPLETAP': 334, 'BTN_MIDDLE': 274, 'KEY_NEXTSONG': 163, 'KEY_PVR': 366, 'KEY_SHUFFLE': 410, 'KEY_INSERT': 110, 'KEY_RIGHTCTRL': 97, 'BUS_GSC': 26, 'SND_CLICK': 0, 'KEY_RO': 89}</em><a class="headerlink" href="#evdev.ecodes.ecodes" title="Permalink to this definition">¶</a></dt>
+<dd><p>mapping of names to values</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="evdev.ecodes.keys">
+<tt class="descclassname">evdev.ecodes.</tt><tt class="descname">keys</tt><em class="property"> = {0: 'KEY_RESERVED', 1: 'KEY_ESC', 2: 'KEY_1', 3: 'KEY_2', 4: 'KEY_3', 5: 'KEY_4', 6: 'KEY_5', 7: 'KEY_6', 8: 'KEY_7', 9: 'KEY_8', 10: 'KEY_9', 11: 'KEY_0', 12: 'KEY_MINUS', 13: 'KEY_EQUAL', 14: 'KEY_BACKSPACE', 15: 'KEY_TAB', 16: 'KEY_Q', 17: 'KEY_W', 18: 'KEY_E', 19: 'KEY_R', 20: 'KEY_T', 21: 'KEY_Y', 22: 'KEY_U', 23: 'KEY_I', 24: 'KEY_O', 25: 'KEY_P', 26: 'KEY_LEFTBRACE', 27: 'KEY_RIGHTBRACE', 28: 'KEY_ENTER', 29: 'KEY_LEFTCTRL', 30: 'KEY_A', 31: 'KEY_S', 32: 'KEY_D', 33: 'KEY_F', 34: 'KEY_G', 35: 'KEY_H', 36: 'KEY_J', 37: 'KEY_K', 38: 'KEY_L', 39: 'KEY_SEMICOLON', 40: 'KEY_APOSTROPHE', 41: 'KEY_GRAVE', 42: 'KEY_LEFTSHIFT', 43: 'KEY_BACKSLASH', 44: 'KEY_Z', 45: 'KEY_X', 46: 'KEY_C', 47: 'KEY_V', 48: 'KEY_B', 49: 'KEY_N', 50: 'KEY_M', 51: 'KEY_COMMA', 52: 'KEY_DOT', 53: 'KEY_SLASH', 54: 'KEY_RIGHTSHIFT', 55: 'KEY_KPASTERISK', 56: 'KEY_LEFTALT', 57: 'KEY_SPACE', 58: 'KEY_CAPSLOCK', 59: 'KEY_F1', 60: 'KEY_F2', 61: 'KEY_F3', 62: 'KEY_F4', 63: 'KEY_F5', 64: 'KEY_F6', 65: 'KEY_F7', 66: 'KEY_F8', 67: 'KEY_F9', 68: 'KEY_F10', 69: 'KEY_NUMLOCK', 70: 'KEY_SCROLLLOCK', 71: 'KEY_KP7', 72: 'KEY_KP8', 73: 'KEY_KP9', 74: 'KEY_KPMINUS', 75: 'KEY_KP4', 76: 'KEY_KP5', 77: 'KEY_KP6', 78: 'KEY_KPPLUS', 79: 'KEY_KP1', 80: 'KEY_KP2', 81: 'KEY_KP3', 82: 'KEY_KP0', 83: 'KEY_KPDOT', 85: 'KEY_ZENKAKUHANKAKU', 86: 'KEY_102ND', 87: 'KEY_F11', 88: 'KEY_F12', 89: 'KEY_RO', 90: 'KEY_KATAKANA', 91: 'KEY_HIRAGANA', 92: 'KEY_HENKAN', 93: 'KEY_KATAKANAHIRAGANA', 94: 'KEY_MUHENKAN', 95: 'KEY_KPJPCOMMA', 96: 'KEY_KPENTER', 97: 'KEY_RIGHTCTRL', 98: 'KEY_KPSLASH', 99: 'KEY_SYSRQ', 100: 'KEY_RIGHTALT', 101: 'KEY_LINEFEED', 102: 'KEY_HOME', 103: 'KEY_UP', 104: 'KEY_PAGEUP', 105: 'KEY_LEFT', 106: 'KEY_RIGHT', 107: 'KEY_END', 108: 'KEY_DOWN', 109: 'KEY_PAGEDOWN', 110: 'KEY_INSERT', 111: 'KEY_DELETE', 112: 'KEY_MACRO', 113: 'KEY_MUTE', 114: 'KEY_VOLUMEDOWN', 115: 'KEY_VOLUMEUP', 116: 'KEY_POWER', 117: 'KEY_KPEQUAL', 118: 'KEY_KPPLUSMINUS', 119: 'KEY_PAUSE', 120: 'KEY_SCALE', 121: 'KEY_KPCOMMA', 122: 'KEY_HANGUEL', 123: 'KEY_HANJA', 124: 'KEY_YEN', 125: 'KEY_LEFTMETA', 126: 'KEY_RIGHTMETA', 127: 'KEY_COMPOSE', 128: 'KEY_STOP', 129: 'KEY_AGAIN', 130: 'KEY_PROPS', 131: 'KEY_UNDO', 132: 'KEY_FRONT', 133: 'KEY_COPY', 134: 'KEY_OPEN', 135: 'KEY_PASTE', 136: 'KEY_FIND', 137: 'KEY_CUT', 138: 'KEY_HELP', 139: 'KEY_MENU', 140: 'KEY_CALC', 141: 'KEY_SETUP', 142: 'KEY_SLEEP', 143: 'KEY_WAKEUP', 144: 'KEY_FILE', 145: 'KEY_SENDFILE', 146: 'KEY_DELETEFILE', 147: 'KEY_XFER', 148: 'KEY_PROG1', 149: 'KEY_PROG2', 150: 'KEY_WWW', 151: 'KEY_MSDOS', 152: 'KEY_SCREENLOCK', 153: 'KEY_DIRECTION', 154: 'KEY_CYCLEWINDOWS', 155: 'KEY_MAIL', 156: 'KEY_BOOKMARKS', 157: 'KEY_COMPUTER', 158: 'KEY_BACK', 159: 'KEY_FORWARD', 160: 'KEY_CLOSECD', 161: 'KEY_EJECTCD', 162: 'KEY_EJECTCLOSECD', 163: 'KEY_NEXTSONG', 164: 'KEY_PLAYPAUSE', 165: 'KEY_PREVIOUSSONG', 166: 'KEY_STOPCD', 167: 'KEY_RECORD', 168: 'KEY_REWIND', 169: 'KEY_PHONE', 170: 'KEY_ISO', 171: 'KEY_CONFIG', 172: 'KEY_HOMEPAGE', 173: 'KEY_REFRESH', 174: 'KEY_EXIT', 175: 'KEY_MOVE', 176: 'KEY_EDIT', 177: 'KEY_SCROLLUP', 178: 'KEY_SCROLLDOWN', 179: 'KEY_KPLEFTPAREN', 180: 'KEY_KPRIGHTPAREN', 181: 'KEY_NEW', 182: 'KEY_REDO', 183: 'KEY_F13', 184: 'KEY_F14', 185: 'KEY_F15', 186: 'KEY_F16', 187: 'KEY_F17', 188: 'KEY_F18', 189: 'KEY_F19', 190: 'KEY_F20', 191: 'KEY_F21', 192: 'KEY_F22', 193: 'KEY_F23', 194: 'KEY_F24', 200: 'KEY_PLAYCD', 201: 'KEY_PAUSECD', 202: 'KEY_PROG3', 203: 'KEY_PROG4', 204: 'KEY_DASHBOARD', 205: 'KEY_SUSPEND', 206: 'KEY_CLOSE', 207: 'KEY_PLAY', 208: 'KEY_FASTFORWARD', 209: 'KEY_BASSBOOST', 210: 'KEY_PRINT', 211: 'KEY_HP', 212: 'KEY_CAMERA', 213: 'KEY_SOUND', 214: 'KEY_QUESTION', 215: 'KEY_EMAIL', 216: 'KEY_CHAT', 217: 'KEY_SEARCH', 218: 'KEY_CONNECT', 219: 'KEY_FINANCE', 220: 'KEY_SPORT', 221: 'KEY_SHOP', 222: 'KEY_ALTERASE', 223: 'KEY_CANCEL', 224: 'KEY_BRIGHTNESSDOWN', 225: 'KEY_BRIGHTNESSUP', 226: 'KEY_MEDIA', 227: 'KEY_SWITCHVIDEOMODE', 228: 'KEY_KBDILLUMTOGGLE', 229: 'KEY_KBDILLUMDOWN', 230: 'KEY_KBDILLUMUP', 231: 'KEY_SEND', 232: 'KEY_REPLY', 233: 'KEY_FORWARDMAIL', 234: 'KEY_SAVE', 235: 'KEY_DOCUMENTS', 236: 'KEY_BATTERY', 237: 'KEY_BLUETOOTH', 238: 'KEY_WLAN', 239: 'KEY_UWB', 240: 'KEY_UNKNOWN', 241: 'KEY_VIDEO_NEXT', 242: 'KEY_VIDEO_PREV', 243: 'KEY_BRIGHTNESS_CYCLE', 244: 'KEY_BRIGHTNESS_ZERO', 245: 'KEY_DISPLAY_OFF', 246: 'KEY_WIMAX', 247: 'KEY_RFKILL', 248: 'KEY_MICMUTE', 256: 'BTN_MISC', 257: 'BTN_1', 258: 'BTN_2', 259: 'BTN_3', 260: 'BTN_4', 261: 'BTN_5', 262: 'BTN_6', 263: 'BTN_7', 264: 'BTN_8', 265: 'BTN_9', 272: 'BTN_MOUSE', 273: 'BTN_RIGHT', 274: 'BTN_MIDDLE', 275: 'BTN_SIDE', 276: 'BTN_EXTRA', 277: 'BTN_FORWARD', 278: 'BTN_BACK', 279: 'BTN_TASK', 288: 'BTN_TRIGGER', 289: 'BTN_THUMB', 290: 'BTN_THUMB2', 291: 'BTN_TOP', 292: 'BTN_TOP2', 293: 'BTN_PINKIE', 294: 'BTN_BASE', 295: 'BTN_BASE2', 296: 'BTN_BASE3', 297: 'BTN_BASE4', 298: 'BTN_BASE5', 299: 'BTN_BASE6', 303: 'BTN_DEAD', 304: 'BTN_GAMEPAD', 305: 'BTN_B', 306: 'BTN_C', 307: 'BTN_X', 308: 'BTN_Y', 309: 'BTN_Z', 310: 'BTN_TL', 311: 'BTN_TR', 312: 'BTN_TL2', 313: 'BTN_TR2', 314: 'BTN_SELECT', 315: 'BTN_START', 316: 'BTN_MODE', 317: 'BTN_THUMBL', 318: 'BTN_THUMBR', 320: 'BTN_TOOL_PEN', 321: 'BTN_TOOL_RUBBER', 322: 'BTN_TOOL_BRUSH', 323: 'BTN_TOOL_PENCIL', 324: 'BTN_TOOL_AIRBRUSH', 325: 'BTN_TOOL_FINGER', 326: 'BTN_TOOL_MOUSE', 327: 'BTN_TOOL_LENS', 328: 'BTN_TOOL_QUINTTAP', 330: 'BTN_TOUCH', 331: 'BTN_STYLUS', 332: 'BTN_STYLUS2', 333: 'BTN_TOOL_DOUBLETAP', 334: 'BTN_TOOL_TRIPLETAP', 335: 'BTN_TOOL_QUADTAP', 336: 'BTN_WHEEL', 337: 'BTN_GEAR_UP', 352: 'KEY_OK', 353: 'KEY_SELECT', 354: 'KEY_GOTO', 355: 'KEY_CLEAR', 356: 'KEY_POWER2', 357: 'KEY_OPTION', 358: 'KEY_INFO', 359: 'KEY_TIME', 360: 'KEY_VENDOR', 361: 'KEY_ARCHIVE', 362: 'KEY_PROGRAM', 363: 'KEY_CHANNEL', 364: 'KEY_FAVORITES', 365: 'KEY_EPG', 366: 'KEY_PVR', 367: 'KEY_MHP', 368: 'KEY_LANGUAGE', 369: 'KEY_TITLE', 370: 'KEY_SUBTITLE', 371: 'KEY_ANGLE', 372: 'KEY_ZOOM', 373: 'KEY_MODE', 374: 'KEY_KEYBOARD', 375: 'KEY_SCREEN', 376: 'KEY_PC', 377: 'KEY_TV', 378: 'KEY_TV2', 379: 'KEY_VCR', 380: 'KEY_VCR2', 381: 'KEY_SAT', 382: 'KEY_SAT2', 383: 'KEY_CD', 384: 'KEY_TAPE', 385: 'KEY_RADIO', 386: 'KEY_TUNER', 387: 'KEY_PLAYER', 388: 'KEY_TEXT', 389: 'KEY_DVD', 390: 'KEY_AUX', 391: 'KEY_MP3', 392: 'KEY_AUDIO', 393: 'KEY_VIDEO', 394: 'KEY_DIRECTORY', 395: 'KEY_LIST', 396: 'KEY_MEMO', 397: 'KEY_CALENDAR', 398: 'KEY_RED', 399: 'KEY_GREEN', 400: 'KEY_YELLOW', 401: 'KEY_BLUE', 402: 'KEY_CHANNELUP', 403: 'KEY_CHANNELDOWN', 404: 'KEY_FIRST', 405: 'KEY_LAST', 406: 'KEY_AB', 407: 'KEY_NEXT', 408: 'KEY_RESTART', 409: 'KEY_SLOW', 410: 'KEY_SHUFFLE', 411: 'KEY_BREAK', 412: 'KEY_PREVIOUS', 413: 'KEY_DIGITS', 414: 'KEY_TEEN', 415: 'KEY_TWEN', 416: 'KEY_VIDEOPHONE', 417: 'KEY_GAMES', 418: 'KEY_ZOOMIN', 419: 'KEY_ZOOMOUT', 420: 'KEY_ZOOMRESET', 421: 'KEY_WORDPROCESSOR', 422: 'KEY_EDITOR', 423: 'KEY_SPREADSHEET', 424: 'KEY_GRAPHICSEDITOR', 425: 'KEY_PRESENTATION', 426: 'KEY_DATABASE', 427: 'KEY_NEWS', 428: 'KEY_VOICEMAIL', 429: 'KEY_ADDRESSBOOK', 430: 'KEY_MESSENGER', 431: 'KEY_DISPLAYTOGGLE', 432: 'KEY_SPELLCHECK', 433: 'KEY_LOGOFF', 434: 'KEY_DOLLAR', 435: 'KEY_EURO', 436: 'KEY_FRAMEBACK', 437: 'KEY_FRAMEFORWARD', 438: 'KEY_CONTEXT_MENU', 439: 'KEY_MEDIA_REPEAT', 440: 'KEY_10CHANNELSUP', 441: 'KEY_10CHANNELSDOWN', 442: 'KEY_IMAGES', 448: 'KEY_DEL_EOL', 449: 'KEY_DEL_EOS', 450: 'KEY_INS_LINE', 451: 'KEY_DEL_LINE', 464: 'KEY_FN', 465: 'KEY_FN_ESC', 466: 'KEY_FN_F1', 467: 'KEY_FN_F2', 468: 'KEY_FN_F3', 469: 'KEY_FN_F4', 470: 'KEY_FN_F5', 471: 'KEY_FN_F6', 472: 'KEY_FN_F7', 473: 'KEY_FN_F8', 474: 'KEY_FN_F9', 475: 'KEY_FN_F10', 476: 'KEY_FN_F11', 477: 'KEY_FN_F12', 478: 'KEY_FN_1', 479: 'KEY_FN_2', 480: 'KEY_FN_D', 481: 'KEY_FN_E', 482: 'KEY_FN_F', 483: 'KEY_FN_S', 484: 'KEY_FN_B', 497: 'KEY_BRL_DOT1', 498: 'KEY_BRL_DOT2', 499: 'KEY_BRL_DOT3', 500: 'KEY_BRL_DOT4', 501: 'KEY_BRL_DOT5', 502: 'KEY_BRL_DOT6', 503: 'KEY_BRL_DOT7', 504: 'KEY_BRL_DOT8', 505: 'KEY_BRL_DOT9', 506: 'KEY_BRL_DOT10', 512: 'KEY_NUMERIC_0', 513: 'KEY_NUMERIC_1', 514: 'KEY_NUMERIC_2', 515: 'KEY_NUMERIC_3', 516: 'KEY_NUMERIC_4', 517: 'KEY_NUMERIC_5', 518: 'KEY_NUMERIC_6', 519: 'KEY_NUMERIC_7', 520: 'KEY_NUMERIC_8', 521: 'KEY_NUMERIC_9', 522: 'KEY_NUMERIC_STAR', 523: 'KEY_NUMERIC_POUND', 528: 'KEY_CAMERA_FOCUS', 529: 'KEY_WPS_BUTTON', 530: 'KEY_TOUCHPAD_TOGGLE', 531: 'KEY_TOUCHPAD_ON', 532: 'KEY_TOUCHPAD_OFF', 533: 'KEY_CAMERA_ZOOMIN', 534: 'KEY_CAMERA_ZOOMOUT', 535: 'KEY_CAMERA_UP', 536: 'KEY_CAMERA_DOWN', 537: 'KEY_CAMERA_LEFT', 538: 'KEY_CAMERA_RIGHT', 704: 'BTN_TRIGGER_HAPPY1', 705: 'BTN_TRIGGER_HAPPY2', 706: 'BTN_TRIGGER_HAPPY3', 707: 'BTN_TRIGGER_HAPPY4', 708: 'BTN_TRIGGER_HAPPY5', 709: 'BTN_TRIGGER_HAPPY6', 710: 'BTN_TRIGGER_HAPPY7', 711: 'BTN_TRIGGER_HAPPY8', 712: 'BTN_TRIGGER_HAPPY9', 713: 'BTN_TRIGGER_HAPPY10', 714: 'BTN_TRIGGER_HAPPY11', 715: 'BTN_TRIGGER_HAPPY12', 716: 'BTN_TRIGGER_HAPPY13', 717: 'BTN_TRIGGER_HAPPY14', 718: 'BTN_TRIGGER_HAPPY15', 719: 'BTN_TRIGGER_HAPPY16', 720: 'BTN_TRIGGER_HAPPY17', 721: 'BTN_TRIGGER_HAPPY18', 722: 'BTN_TRIGGER_HAPPY19', 723: 'BTN_TRIGGER_HAPPY20', 724: 'BTN_TRIGGER_HAPPY21', 725: 'BTN_TRIGGER_HAPPY22', 726: 'BTN_TRIGGER_HAPPY23', 727: 'BTN_TRIGGER_HAPPY24', 728: 'BTN_TRIGGER_HAPPY25', 729: 'BTN_TRIGGER_HAPPY26', 730: 'BTN_TRIGGER_HAPPY27', 731: 'BTN_TRIGGER_HAPPY28', 732: 'BTN_TRIGGER_HAPPY29', 733: 'BTN_TRIGGER_HAPPY30', 734: 'BTN_TRIGGER_HAPPY31', 735: 'BTN_TRIGGER_HAPPY32', 736: 'BTN_TRIGGER_HAPPY33', 737: 'BTN_TRIGGER_HAPPY34', 738: 'BTN_TRIGGER_HAPPY35', 739: 'BTN_TRIGGER_HAPPY36', 740: 'BTN_TRIGGER_HAPPY37', 741: 'BTN_TRIGGER_HAPPY38', 742: 'BTN_TRIGGER_HAPPY39', 743: 'BTN_TRIGGER_HAPPY40', 767: 'KEY_MAX', 768: 'KEY_CNT'}</em><a class="headerlink" href="#evdev.ecodes.keys" title="Permalink to this definition">¶</a></dt>
+<dd><p>keys are a combination of all BTN and KEY codes</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">evdev.events</a></li>
+<li><a class="reference internal" href="#module-evdev.device">evdev.device</a></li>
+<li><a class="reference internal" href="#module-evdev.util">evdev.util</a></li>
+<li><a class="reference internal" href="#module-evdev.ecodes">evdev.ecodes</a></li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="index.html"
+                        title="previous chapter"><em>evdev</em> documentation</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/moduledoc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="evdev documentation"
+             >previous</a> |</li>
+        <li><a href="index.html">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Georgi Valkov.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

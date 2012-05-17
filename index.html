@@ -1,0 +1,311 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>evdev documentation &mdash; python-evdev 0.1.0 documentation</title>
+    
+    <link rel="stylesheet" href="_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="python-evdev 0.1.0 documentation" href="#" />
+    <link rel="next" title="evdev.events" href="moduledoc.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="moduledoc.html" title="evdev.events"
+             accesskey="N">next</a> |</li>
+        <li><a href="#">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="evdev-documentation">
+<h1><em>evdev</em> documentation<a class="headerlink" href="#evdev-documentation" title="Permalink to this headline">¶</a></h1>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> provides bindings to the generic input event interface in Linux.
+The <em>evdev</em> interface serves the purpose of passing events generated in the
+kernel directly to userspace through character devices that are typically
+located in <cite>/dev/input/</cite>.</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> also comes with bindings to <cite>uinput</cite>, the userspace input
+subsystem. <cite>Uinput</cite> allows userspace programs to create and handle input
+devices from which they can inject events directly into the input subsystem.</p>
+<div class="section" id="tutorial">
+<h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
+<p>Listing accessible event devices:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">InputDevice</span><span class="p">,</span> <span class="n">list_devices</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">devices</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">InputDevice</span><span class="p">,</span> <span class="n">list_devices</span><span class="p">())</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="k">print</span><span class="p">(</span> <span class="s">&#39;</span><span class="si">%-20s</span><span class="s"> </span><span class="si">%-32s</span><span class="s"> </span><span class="si">%s</span><span class="s">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">dev</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="n">dev</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">dev</span><span class="o">.</span><span class="n">phys</span><span class="p">)</span> <span class="p">)</span>
+<span class="go">/dev/input/event1    Dell Dell USB Keyboard           usb-0000:00:12.1-2/input0</span>
+<span class="go">/dev/input/event0    Dell Premium USB Optical Mouse   usb-0000:00:12.0-2/input0</span>
+</pre></div>
+</div>
+<p>Listing device capabilities:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span> <span class="o">=</span> <span class="n">InputDevice</span><span class="p">(</span><span class="s">&#39;/dev/input/event0&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="go">device /dev/input/event0, name &quot;Dell Premium USB Optical Mouse&quot;, phys &quot;usb-0000:00:12.0-2/input0&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span><span class="o">.</span><span class="n">capabilities</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">{</span> <span class="mi">0</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span> <span class="mi">1</span><span class="p">:</span> <span class="p">[</span><span class="mi">272</span><span class="p">,</span> <span class="mi">273</span><span class="p">,</span> <span class="mi">274</span><span class="p">,</span> <span class="mi">275</span><span class="p">],</span> <span class="mi">2</span><span class="p">:</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">8</span><span class="p">],</span> <span class="mi">4</span><span class="p">:</span> <span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="p">}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span><span class="o">.</span><span class="n">capabilities</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="p">{</span> <span class="s">&#39;(EV_SYN, 0)&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s">&#39;SYN_REPORT&#39;</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;SYN_CONFIG&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;SYN_MT_REPORT&#39;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)],</span>
+<span class="gp">&gt;&gt;&gt; </span>  <span class="s">&#39;(EV_KEY, 1)&#39;</span><span class="p">:</span> <span class="p">[(</span><span class="s">&#39;BTN_MOUSE&#39;</span><span class="p">,</span> <span class="mi">272</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;BTN_RIGHT&#39;</span><span class="p">,</span> <span class="mi">273</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;BTN_MIDDLE&#39;</span><span class="p">,</span> <span class="mi">274</span><span class="p">),</span> <span class="p">(</span><span class="s">&#39;BTN_SIDE&#39;</span><span class="p">,</span> <span class="mi">275</span><span class="p">)],</span> <span class="o">...</span>
+</pre></div>
+</div>
+<p>Accessing input subsystem constants:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">ecodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecodes</span><span class="o">.</span><span class="n">KEY_A</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">ecodes</span><span class="p">[</span><span class="s">&#39;KEY_A&#39;</span><span class="p">]</span>
+<span class="go">(30, 30)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecodes</span><span class="o">.</span><span class="n">KEY</span><span class="p">[</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">&#39;KEY_A&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ecodes</span><span class="o">.</span><span class="n">bytype</span><span class="p">[</span><span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">][</span><span class="mi">30</span><span class="p">]</span>
+<span class="go">&#39;KEY_A&#39;</span>
+</pre></div>
+</div>
+<p>Reading events:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">InputDevice</span><span class="p">,</span> <span class="n">categorize</span><span class="p">,</span> <span class="n">ecodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">select</span> <span class="kn">import</span> <span class="n">select</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span> <span class="o">=</span> <span class="n">InputDevice</span><span class="p">(</span><span class="s">&#39;/dev/input/event1&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="go">device /dev/input/event1, name &quot;Dell Dell USB Keyboard&quot;, phys &quot;usb-0000:00:12.1-2/input0&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">r</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">dev</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">dev</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
+<span class="gp">... </span>       <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
+<span class="gp">... </span>           <span class="k">print</span><span class="p">(</span><span class="n">categorize</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<span class="gp">... </span><span class="c"># hitting a and holding space</span>
+<span class="go">key event at 1337016188.396030, 30 (KEY_A), down</span>
+<span class="go">key event at 1337016188.492033, 30 (KEY_A), up</span>
+<span class="go">key event at 1337016189.772129, 57 (KEY_SPACE), down</span>
+<span class="go">key event at 1337016190.275396, 57 (KEY_SPACE), hold</span>
+<span class="go">key event at 1337016190.284160, 57 (KEY_SPACE), up</span>
+</pre></div>
+</div>
+<p>Reading events with asyncore:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">asyncore</span> <span class="kn">import</span> <span class="n">file_dispatcher</span><span class="p">,</span> <span class="n">loop</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">InputDevice</span><span class="p">,</span> <span class="n">categorize</span><span class="p">,</span> <span class="n">ecodes</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span> <span class="o">=</span> <span class="n">InputDevice</span><span class="p">(</span><span class="s">&#39;/dev/input/event1&#39;</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">InputDeviceDispatcher</span><span class="p">(</span><span class="n">file_dispatcher</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="bp">self</span><span class="o">.</span><span class="n">device</span> <span class="o">=</span> <span class="n">device</span>
+<span class="gp">... </span>        <span class="n">file_dispatcher</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">device</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">recv</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ign</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">device</span><span class="o">.</span><span class="n">read</span><span class="p">()</span>
+<span class="gp">...</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">handle_read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">recv</span><span class="p">():</span>
+<span class="gp">... </span>            <span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">InputDeviceDispatcher</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">loop</span><span class="p">()</span>
+<span class="go">InputEvent(1337255905L, 358854L, 1, 30, 0L)</span>
+<span class="go">InputEvent(1337255905L, 358857L, 0, 0, 0L)</span>
+</pre></div>
+</div>
+<p>Associating classes with event types (see <a class="reference internal" href="moduledoc.html#module-evdev.events" title="evdev.events"><tt class="xref py py-mod docutils literal"><span class="pre">events</span></tt></a>):</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">categorize</span><span class="p">,</span> <span class="n">event_factory</span><span class="p">,</span> <span class="n">ecodes</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SynEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+<span class="gp">... </span>        <span class="o">...</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">event_factory</span><span class="p">[</span><span class="n">ecodes</span><span class="o">.</span><span class="n">EV_SYN</span><span class="p">]</span> <span class="o">=</span> <span class="n">SynEvent</span>
+</pre></div>
+</div>
+<p>Injecting events:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">ecodes</span><span class="p">,</span> <span class="n">UInput</span><span class="p">,</span> <span class="n">events</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span> <span class="o">=</span> <span class="n">UInput</span><span class="p">(</span><span class="s">&#39;test-device&#39;</span><span class="p">,</span> <span class="mh">0x0001</span><span class="p">,</span> <span class="mh">0x0002</span><span class="p">,</span> <span class="mh">0x0003</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ev</span> <span class="o">=</span> <span class="n">events</span><span class="o">.</span><span class="n">InputEvent</span><span class="p">(</span><span class="mi">1334414993</span><span class="p">,</span> <span class="mi">274296</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">KEY_A</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">ev</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span><span class="o">.</span><span class="n">syn</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="requirements">
+<h2>Requirements<a class="headerlink" href="#requirements" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> contains C extension modules and requires the Python development
+headers as well as the kernel headers.</p>
+<p>On a Debian compatible OS:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>apt-get install python-dev
+<span class="nv">$ </span>apt-get install linux-headers-<span class="k">$(</span>uname -r<span class="k">)</span>
+</pre></div>
+</div>
+<p>On a Redhat compatible OS:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>yum install python-devel
+<span class="nv">$ </span>yum install kernel-headers-<span class="k">$(</span>uname -r<span class="k">)</span>
+</pre></div>
+</div>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> itself requires CPython <strong>&gt;= 2.7</strong></p>
+</div>
+<div class="section" id="installation">
+<h2>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h2>
+<p>Assuming all requirements have been met, the latest stable version of
+<tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> can be installed from <a class="reference external" href="http://pypi.python.org/pypi/evdev">PyPi</a>, while the development version can be
+installed from <a class="reference external" href="https://github.com/gvalkov/python-evdev">github</a>:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>pip install evdev  <span class="c"># latest stable version</span>
+<span class="nv">$ </span>pip install git+git://github.com/gvalkov/python-evdev.git <span class="c"># latest development version</span>
+</pre></div>
+</div>
+<p>Alternatively, <tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> can be installed like any other
+<a class="reference external" href="http://docs.python.org/3.2/library/distutils.html#distutils" title="(in Python v3.2)"><tt class="xref py py-mod docutils literal"><span class="pre">distutils</span></tt></a>/<tt class="xref py py-mod docutils literal"><span class="pre">setuptools</span></tt>/<tt class="xref py py-mod docutils literal"><span class="pre">packaging</span></tt> package:</p>
+<div class="highlight-bash"><div class="highlight"><pre><span class="nv">$ </span>git clone github.com/gvalkov/python-evdev.git
+<span class="nv">$ </span><span class="nb">cd </span>python-evdev
+<span class="nv">$ </span>git checkout <span class="nv">$versiontag</span>
+<span class="nv">$ </span>python setup.py install
+</pre></div>
+</div>
+</div>
+<div class="section" id="module-contents">
+<h2>Module Contents<a class="headerlink" href="#module-contents" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html">evdev.events</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html#module-evdev.device">evdev.device</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html#module-evdev.util">evdev.util</a></li>
+<li class="toctree-l1"><a class="reference internal" href="moduledoc.html#module-evdev.ecodes">evdev.ecodes</a></li>
+</ul>
+</div>
+</div>
+<div class="section" id="similar-projects">
+<h2>Similar Projects<a class="headerlink" href="#similar-projects" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li><a class="reference external" href="https://github.com/tuomasjjrasanen/python-uinput">python-uinput</a></li>
+<li><a class="reference external" href="http://technofetish.net/repos/buffaloplay/ruby_evdev/doc/">ruby-evdev</a></li>
+</ul>
+</div>
+<div class="section" id="license">
+<h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> is released under the terms of the <a class="reference external" href="https://raw.github.com/gvalkov/rsstail.py/master/LICENSE">New BSD License</a>.</p>
+</div>
+<div class="section" id="todo">
+<h2>Todo<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Use libudev to find the uinput device node as well as the other input
+devices. Their locations are currently assumed to be <cite>/dev/uinput</cite> and
+<cite>/dev/input/*</cite>.</li>
+<li>More tests.</li>
+<li>Better uinput support (setting device capabilities as in <cite>python-uinput_</cite>)</li>
+<li>Expose more input subsystem functionality (<cite>EVIOCSKEYCODE</cite>, <cite>EVIOCGREP</cite> etc)</li>
+<li>Figure out if using <cite>linux/input.h</cite> and other kernel headers in your
+userspace program binds it to the GPL2.</li>
+</ul>
+</div>
+</div>
+<div class="section" id="indices-and-tables">
+<h1>Indices and Tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">¶</a></h1>
+<ul class="simple">
+<li><a class="reference internal" href="genindex.html"><em>Index</em></a></li>
+<li><a class="reference internal" href="py-modindex.html"><em>Module Index</em></a></li>
+<li><a class="reference internal" href="search.html"><em>Search Page</em></a></li>
+</ul>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="#">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#"><em>evdev</em> documentation</a><ul>
+<li><a class="reference internal" href="#tutorial">Tutorial</a></li>
+<li><a class="reference internal" href="#requirements">Requirements</a></li>
+<li><a class="reference internal" href="#installation">Installation</a></li>
+<li><a class="reference internal" href="#module-contents">Module Contents</a><ul>
+</ul>
+</li>
+<li><a class="reference internal" href="#similar-projects">Similar Projects</a></li>
+<li><a class="reference internal" href="#license">License</a></li>
+<li><a class="reference internal" href="#todo">Todo</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#indices-and-tables">Indices and Tables</a></li>
+</ul>
+
+  <h4>Next topic</h4>
+  <p class="topless"><a href="moduledoc.html"
+                        title="next chapter">evdev.events</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/index.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="moduledoc.html" title="evdev.events"
+             >next</a> |</li>
+        <li><a href="#">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Georgi Valkov.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
