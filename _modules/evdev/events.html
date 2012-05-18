@@ -87,7 +87,7 @@
 <span class="c"># event type descriptions have been taken mot-a-mot from:</span>
 <span class="c"># http://www.kernel.org/doc/Documentation/input/event-codes.txt</span>
 
-<span class="kn">from</span> <span class="nn">evdev.ecodes</span> <span class="kn">import</span> <span class="n">KEY</span><span class="p">,</span> <span class="n">SYN</span><span class="p">,</span> <span class="n">REL</span><span class="p">,</span> <span class="n">ABS</span><span class="p">,</span> <span class="n">EV_KEY</span><span class="p">,</span> <span class="n">EV_REL</span><span class="p">,</span> <span class="n">EV_ABS</span><span class="p">,</span> <span class="n">EV_SYN</span>
+<span class="kn">from</span> <span class="nn">evdev.ecodes</span> <span class="kn">import</span> <span class="n">keys</span><span class="p">,</span> <span class="n">KEY</span><span class="p">,</span> <span class="n">SYN</span><span class="p">,</span> <span class="n">REL</span><span class="p">,</span> <span class="n">ABS</span><span class="p">,</span> <span class="n">EV_KEY</span><span class="p">,</span> <span class="n">EV_REL</span><span class="p">,</span> <span class="n">EV_ABS</span><span class="p">,</span> <span class="n">EV_SYN</span>
 
 
 <div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../moduledoc.html#evdev.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -147,7 +147,7 @@
         <span class="k">elif</span> <span class="n">event</span><span class="o">.</span><span class="n">value</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">keystate</span> <span class="o">=</span> <span class="n">KeyEvent</span><span class="o">.</span><span class="n">key_down</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">keycode</span>  <span class="o">=</span> <span class="n">KEY</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">code</span><span class="p">]</span>  <span class="c"># :todo:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">keycode</span>  <span class="o">=</span> <span class="n">keys</span><span class="p">[</span><span class="n">event</span><span class="o">.</span><span class="n">code</span><span class="p">]</span>  <span class="c"># :todo:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">scancode</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span>
 
         <span class="c">#: :class:`InputEvent` instance</span>
