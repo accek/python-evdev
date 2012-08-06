@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev.events &mdash; python-evdev 0.1.0 documentation</title>
+    <title>evdev.events &mdash; python-evdev 0.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0',
+        VERSION:     '0.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.1.0 documentation" href="index.html" />
+    <link rel="top" title="python-evdev 0.1.2 documentation" href="index.html" />
     <link rel="prev" title="evdev documentation" href="index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="evdev documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">python-evdev 0.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,8 +51,8 @@
             
   <div class="section" id="module-evdev.events">
 <span id="evdev-events"></span><h1>evdev.events<a class="headerlink" href="#module-evdev.events" title="Permalink to this headline">¶</a></h1>
-<p>This module provides the <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> class, which closely resembles the
-<cite>input_event</cite> C struct in <cite>linux/input.h</cite>:</p>
+<p>This module provides the <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> class, which closely
+resembles the <tt class="docutils literal"><span class="pre">input_event</span></tt> C struct in <tt class="docutils literal"><span class="pre">linux/input.h</span></tt>:</p>
 <div class="highlight-c"><div class="highlight"><pre><span class="k">struct</span> <span class="n">input_event</span> <span class="p">{</span>
     <span class="k">struct</span> <span class="n">timeval</span> <span class="n">time</span><span class="p">;</span>
     <span class="n">__u16</span> <span class="n">type</span><span class="p">;</span>
@@ -67,7 +67,7 @@ that know more about the different event types (key, abs, rel etc). The
 <p>Assuming you use the provided <a class="reference internal" href="#evdev.util.categorize" title="evdev.util.categorize"><tt class="xref py py-func docutils literal"><span class="pre">evdev.util.categorize()</span></tt></a> function to
 categorize events according to type, adding or replacing a class for a specific
 event type becomes a matter of modifying <a class="reference internal" href="#evdev.events.event_factory" title="evdev.events.event_factory"><tt class="xref py py-data docutils literal"><span class="pre">event_factory</span></tt></a>.</p>
-<p>All of the provided classes have reasonable str() and repr() methods:</p>
+<p>All of the provided classes have reasonable <tt class="docutils literal"><span class="pre">str()</span></tt> and <tt class="docutils literal"><span class="pre">repr()</span></tt> methods:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
 <span class="go">event at 1337197425.477827, code 04, type 04, val 458792</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
@@ -82,7 +82,7 @@ event type becomes a matter of modifying <a class="reference internal" href="#ev
 <dl class="class">
 <dt id="evdev.events.InputEvent">
 <em class="property">class </em><tt class="descclassname">evdev.events.</tt><tt class="descname">InputEvent</tt><big>(</big><em>sec</em>, <em>usec</em>, <em>type</em>, <em>code</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent" title="Permalink to this definition">¶</a></dt>
-<dd><p>A generic input event. This closely resembles the input_event C struct.</p>
+<dd><p>A generic input event. This closely resembles the <tt class="docutils literal"><span class="pre">input_event</span></tt> C struct.</p>
 <dl class="method">
 <dt id="evdev.events.InputEvent.__init__">
 <tt class="descname">__init__</tt><big>(</big><em>sec</em>, <em>usec</em>, <em>type</em>, <em>code</em>, <em>value</em><big>)</big><a class="reference internal" href="_modules/evdev/events.html#InputEvent.__init__"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.events.InputEvent.__init__" title="Permalink to this definition">¶</a></dt>
@@ -111,7 +111,7 @@ event type becomes a matter of modifying <a class="reference internal" href="#ev
 <dl class="attribute">
 <dt id="evdev.events.InputEvent.code">
 <tt class="descname">code</tt><a class="headerlink" href="#evdev.events.InputEvent.code" title="Permalink to this definition">¶</a></dt>
-<dd><p>Event code - probably one of <a class="reference internal" href="#evdev.ecodes.bytype" title="evdev.ecodes.bytype"><tt class="xref py py-data docutils literal"><span class="pre">evdev.ecodes.bytype</span></tt></a></p>
+<dd><p>Event code related to the event type</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -129,7 +129,7 @@ event type becomes a matter of modifying <a class="reference internal" href="#ev
 <dl class="attribute">
 <dt id="evdev.events.InputEvent.type">
 <tt class="descname">type</tt><a class="headerlink" href="#evdev.events.InputEvent.type" title="Permalink to this definition">¶</a></dt>
-<dd><p>Event type - one of ecodes.EV_*</p>
+<dd><p>Event type - one of <tt class="docutils literal"><span class="pre">ecodes.EV_*</span></tt></p>
 </dd></dl>
 
 <dl class="attribute">
@@ -141,7 +141,7 @@ event type becomes a matter of modifying <a class="reference internal" href="#ev
 <dl class="attribute">
 <dt id="evdev.events.InputEvent.value">
 <tt class="descname">value</tt><a class="headerlink" href="#evdev.events.InputEvent.value" title="Permalink to this definition">¶</a></dt>
-<dd><p>Event value</p>
+<dd><p>Event value related to the event type</p>
 </dd></dl>
 
 </dd></dl>
@@ -356,7 +356,7 @@ in space, such as with the multitouch protocol.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
 <li><strong>dev</strong> &#8211; path to input device</li>
-<li><strong>nophys</strong> &#8211; do not do a EVIOCGPHYS ioctl (needed by uinput)</li>
+<li><strong>nophys</strong> &#8211; do not do a <tt class="docutils literal"><span class="pre">EVIOCGPHYS</span></tt> ioctl (needed by uinput)</li>
 </ul>
 </td>
 </tr>
@@ -416,9 +416,9 @@ names. Example:</p>
 <dl class="method">
 <dt id="evdev.device.InputDevice.fileno">
 <tt class="descname">fileno</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.fileno"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.fileno" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns file descriptor to event device. This makes passing InputDevice
-instances directly to <a class="reference external" href="http://docs.python.org/3.2/library/select.html#select.select" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">select.select()</span></tt></a> and
-<a class="reference external" href="http://docs.python.org/3.2/library/asyncore.html#asyncore.file_dispatcher" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">asyncore.file_dispatcher</span></tt></a> possible.</p>
+<dd><p>Returns file descriptor to event device. This makes passing
+<tt class="docutils literal"><span class="pre">InputDevice</span></tt> instances directly to <a class="reference external" href="http://docs.python.org/3.2/library/select.html#select.select" title="(in Python v3.2)"><tt class="xref py py-func docutils literal"><span class="pre">select.select()</span></tt></a>
+and <a class="reference external" href="http://docs.python.org/3.2/library/asyncore.html#asyncore.file_dispatcher" title="(in Python v3.2)"><tt class="xref py py-class docutils literal"><span class="pre">asyncore.file_dispatcher</span></tt></a> possible.</p>
 </dd></dl>
 
 <dl class="attribute">
@@ -549,7 +549,7 @@ is returned as it was.</p>
 </div>
 <div class="section" id="module-evdev.ecodes">
 <span id="evdev-ecodes"></span><h1>evdev.ecodes<a class="headerlink" href="#module-evdev.ecodes" title="Permalink to this headline">¶</a></h1>
-<p>This modules exposes most integer constants defined in <cite>linux/input.h</cite>.</p>
+<p>This modules exposes most integer constants defined in <tt class="docutils literal"><span class="pre">linux/input.h</span></tt>.</p>
 <p>Exposed constants:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="n">KEY</span><span class="p">,</span> <span class="n">ABS</span><span class="p">,</span> <span class="n">REL</span><span class="p">,</span> <span class="n">SW</span><span class="p">,</span> <span class="n">MSC</span><span class="p">,</span> <span class="n">LED</span><span class="p">,</span> <span class="n">BTN</span><span class="p">,</span> <span class="n">REP</span><span class="p">,</span> <span class="n">SND</span><span class="p">,</span> <span class="n">ID</span><span class="p">,</span> <span class="n">EV</span><span class="p">,</span> <span class="n">BUS</span><span class="p">,</span> <span class="n">SYN</span>
 </pre></div>
@@ -646,7 +646,7 @@ illustrated by a few examples:</p>
         <li class="right" >
           <a href="index.html" title="evdev documentation"
              >previous</a> |</li>
-        <li><a href="index.html">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">python-evdev 0.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

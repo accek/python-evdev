@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev documentation &mdash; python-evdev 0.1.0 documentation</title>
+    <title>evdev documentation &mdash; python-evdev 0.1.2 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.1.0',
+        VERSION:     '0.1.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.1.0 documentation" href="#" />
+    <link rel="top" title="python-evdev 0.1.2 documentation" href="#" />
     <link rel="next" title="evdev.events" href="moduledoc.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="moduledoc.html" title="evdev.events"
              accesskey="N">next</a> |</li>
-        <li><a href="#">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">python-evdev 0.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -51,13 +51,14 @@
             
   <div class="section" id="evdev-documentation">
 <h1><em>evdev</em> documentation<a class="headerlink" href="#evdev-documentation" title="Permalink to this headline">¶</a></h1>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> provides bindings to the generic input event interface in Linux.
-The <em>evdev</em> interface serves the purpose of passing events generated in the
-kernel directly to userspace through character devices that are typically
-located in <cite>/dev/input/</cite>.</p>
-<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> also comes with bindings to <cite>uinput</cite>, the userspace input
-subsystem. <cite>Uinput</cite> allows userspace programs to create and handle input
-devices from which they can inject events directly into the input subsystem.</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> provides bindings to the generic input event interface in
+Linux.  The <em>evdev</em> interface serves the purpose of passing events
+generated in the kernel directly to userspace through character
+devices that are typically located in <tt class="docutils literal"><span class="pre">/dev/input/</span></tt>.</p>
+<p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> also comes with bindings to <tt class="docutils literal"><span class="pre">uinput</span></tt>, the userspace
+input subsystem. <tt class="docutils literal"><span class="pre">Uinput</span></tt> allows userspace programs to create and
+handle input devices from which they can inject events directly into
+the input subsystem.</p>
 <div class="section" id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>Listing accessible event devices:</p>
@@ -221,12 +222,12 @@ installed from <a class="reference external" href="https://github.com/gvalkov/py
 <h2>Todo<a class="headerlink" href="#todo" title="Permalink to this headline">¶</a></h2>
 <ul class="simple">
 <li>Use libudev to find the uinput device node as well as the other input
-devices. Their locations are currently assumed to be <cite>/dev/uinput</cite> and
-<cite>/dev/input/*</cite>.</li>
+devices. Their locations are currently assumed to be <tt class="docutils literal"><span class="pre">/dev/uinput</span></tt> and
+<tt class="docutils literal"><span class="pre">/dev/input/*</span></tt>.</li>
 <li>More tests.</li>
 <li>Better uinput support (setting device capabilities as in <a class="reference external" href="https://github.com/tuomasjjrasanen/python-uinput">python-uinput</a>)</li>
-<li>Expose more input subsystem functionality (<cite>EVIOCSKEYCODE</cite>, <cite>EVIOCGREP</cite> etc)</li>
-<li>Figure out if using <cite>linux/input.h</cite> and other kernel headers in your
+<li>Expose more input subsystem functionality (<tt class="docutils literal"><span class="pre">EVIOCSKEYCODE</span></tt>, <tt class="docutils literal"><span class="pre">EVIOCGREP</span></tt> etc)</li>
+<li>Figure out if using <tt class="docutils literal"><span class="pre">linux/input.h</span></tt> and other kernel headers in your
 userspace program binds it to the GPL2.</li>
 </ul>
 </div>
@@ -300,7 +301,7 @@ userspace program binds it to the GPL2.</li>
         <li class="right" >
           <a href="moduledoc.html" title="evdev.events"
              >next</a> |</li>
-        <li><a href="#">python-evdev 0.1.0 documentation</a> &raquo;</li> 
+        <li><a href="#">python-evdev 0.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
