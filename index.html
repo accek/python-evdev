@@ -108,7 +108,7 @@ the input subsystem.</p>
 <span class="gp">... </span>   <span class="n">r</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">dev</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
 <span class="gp">... </span>   <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">dev</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
 <span class="gp">... </span>       <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
-<span class="gp">... </span>           <span class="k">print</span><span class="p">(</span><span class="n">categorize</span><span class="p">(</span><span class="n">e</span><span class="p">))</span>
+<span class="gp">... </span>           <span class="k">print</span><span class="p">(</span><span class="n">categorize</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
 <span class="gp">... </span><span class="c"># hitting a and holding space</span>
 <span class="go">key event at 1337016188.396030, 30 (KEY_A), down</span>
 <span class="go">key event at 1337016188.492033, 30 (KEY_A), up</span>
@@ -212,6 +212,7 @@ installed from <a class="reference external" href="https://github.com/gvalkov/py
 <ul class="simple">
 <li><a class="reference external" href="https://github.com/tuomasjjrasanen/python-uinput">python-uinput</a></li>
 <li><a class="reference external" href="http://technofetish.net/repos/buffaloplay/ruby_evdev/doc/">ruby-evdev</a></li>
+<li><a class="reference external" href="http://svn.navi.cx/misc/trunk/python/evdev/">evdev</a> (ctypes)</li>
 </ul>
 </div>
 <div class="section" id="license">

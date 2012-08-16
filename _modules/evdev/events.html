@@ -51,8 +51,8 @@
 <span class="c"># encoding: utf-8</span>
 
 <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">This module provides the :class:`InputEvent` class, which closely resembles the</span>
-<span class="sd">`input_event` C struct in `linux/input.h`:</span>
+<span class="sd">This module provides the :class:`InputEvent` class, which closely</span>
+<span class="sd">resembles the ``input_event`` C struct in ``linux/input.h``:</span>
 
 <span class="sd">.. code-block:: c</span>
 
@@ -71,7 +71,7 @@
 <span class="sd">categorize events according to type, adding or replacing a class for a specific</span>
 <span class="sd">event type becomes a matter of modifying :data:`event_factory`.</span>
 
-<span class="sd">All of the provided classes have reasonable str() and repr() methods::</span>
+<span class="sd">All of the provided classes have reasonable ``str()`` and ``repr()`` methods::</span>
 
 <span class="sd">    &gt;&gt;&gt; print(event)</span>
 <span class="sd">    event at 1337197425.477827, code 04, type 04, val 458792</span>
@@ -92,7 +92,7 @@
 
 <div class="viewcode-block" id="InputEvent"><a class="viewcode-back" href="../../moduledoc.html#evdev.events.InputEvent">[docs]</a><span class="k">class</span> <span class="nc">InputEvent</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    A generic input event. This closely resembles the input_event C struct.</span>
+<span class="sd">    A generic input event. This closely resembles the ``input_event`` C struct.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
     <span class="n">__slots__</span> <span class="o">=</span> <span class="s">&#39;sec&#39;</span><span class="p">,</span> <span class="s">&#39;usec&#39;</span><span class="p">,</span> <span class="s">&#39;type&#39;</span><span class="p">,</span> <span class="s">&#39;code&#39;</span><span class="p">,</span> <span class="s">&#39;value&#39;</span>
@@ -104,13 +104,13 @@
         <span class="c">#: Microsecond portion of the timestamp</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">usec</span> <span class="o">=</span> <span class="n">usec</span>
 
-        <span class="c">#: Event type - one of ecodes.EV_*</span>
+        <span class="c">#: Event type - one of ``ecodes.EV_*``</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">type</span> <span class="o">=</span> <span class="nb">type</span>
 
-        <span class="c">#: Event code - probably one of :data:`evdev.ecodes.bytype`</span>
+        <span class="c">#: Event code related to the event type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">code</span> <span class="o">=</span> <span class="n">code</span>
 
-        <span class="c">#: Event value</span>
+        <span class="c">#: Event value related to the event type</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">value</span> <span class="o">=</span> <span class="n">value</span>
 </div>
 <div class="viewcode-block" id="InputEvent.timestamp"><a class="viewcode-back" href="../../moduledoc.html#evdev.events.InputEvent.timestamp">[docs]</a>    <span class="k">def</span> <span class="nf">timestamp</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>

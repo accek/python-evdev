@@ -90,7 +90,7 @@
 <div class="viewcode-block" id="InputDevice.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">nophys</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param dev: path to input device</span>
-<span class="sd">        :param nophys: do not do a EVIOCGPHYS ioctl (needed by uinput)</span>
+<span class="sd">        :param nophys: do not do a ``EVIOCGPHYS`` ioctl (needed by uinput)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="c">#: Path to input device</span>
@@ -169,9 +169,9 @@
 </div>
 <div class="viewcode-block" id="InputDevice.fileno"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.fileno">[docs]</a>    <span class="k">def</span> <span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Returns file descriptor to event device. This makes passing InputDevice</span>
-<span class="sd">        instances directly to :func:`select.select()` and</span>
-<span class="sd">        :class:`asyncore.file_dispatcher` possible.</span>
+<span class="sd">        Returns file descriptor to event device. This makes passing</span>
+<span class="sd">        ``InputDevice`` instances directly to :func:`select.select()`</span>
+<span class="sd">        and :class:`asyncore.file_dispatcher` possible.</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span>
