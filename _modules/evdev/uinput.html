@@ -1,0 +1,266 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>evdev.uinput &mdash; python-evdev 0.2.0 documentation</title>
+    
+    <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '../../',
+        VERSION:     '0.2.0',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <link rel="top" title="python-evdev 0.2.0 documentation" href="../../index.html" />
+    <link rel="up" title="Module code" href="../index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <h1>Source code for evdev.uinput</h1><div class="highlight"><pre>
+<span class="c"># encoding: utf-8</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">stat</span>
+
+<span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">_uinput</span>
+<span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">ecodes</span><span class="p">,</span> <span class="n">util</span>
+
+
+<div class="viewcode-block" id="UInputError"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInputError">[docs]</a><span class="k">class</span> <span class="nc">UInputError</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+</div>
+<div class="viewcode-block" id="UInput"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput">[docs]</a><span class="k">class</span> <span class="nc">UInput</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    I represent a linux userland input (uinput) device and am capapble of</span>
+<span class="sd">    injecting input events into the input subsystem.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;vendor&#39;</span><span class="p">,</span> <span class="s">&#39;product&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span><span class="p">,</span> <span class="s">&#39;bustype&#39;</span><span class="p">,</span>
+        <span class="s">&#39;mouserel&#39;</span><span class="p">,</span> <span class="s">&#39;mouseabs&#39;</span><span class="p">,</span> <span class="s">&#39;events&#39;</span><span class="p">,</span> <span class="s">&#39;devnode&#39;</span><span class="p">,</span> <span class="s">&#39;fd&#39;</span><span class="p">,</span>
+    <span class="p">)</span>
+
+<div class="viewcode-block" id="UInput.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">events</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+                 <span class="n">name</span><span class="o">=</span><span class="s">&#39;py-evdev-uinput&#39;</span><span class="p">,</span>
+                 <span class="n">vendor</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span> <span class="n">product</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span> <span class="n">version</span><span class="o">=</span><span class="mh">0x0</span><span class="p">,</span>
+                 <span class="n">bustype</span><span class="o">=</span><span class="mh">0x3</span><span class="p">,</span>
+                 <span class="n">mouserel</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+                 <span class="n">mouseabs</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                 <span class="n">devnode</span><span class="o">=</span><span class="s">&#39;/dev/uinput&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+
+<span class="sd">        :param events: the event types and codes that the uinput</span>
+<span class="sd">        device will be able to inject - defaults to all key codes.</span>
+
+<span class="sd">        :type events: dictionary of event types mapping to lists of</span>
+<span class="sd">        event codes</span>
+
+<span class="sd">        :param name: the name of the input device</span>
+<span class="sd">        :param vendor:  vendor identifier</span>
+<span class="sd">        :param product: product identifier</span>
+<span class="sd">        :param version: version identifier</span>
+<span class="sd">        :param bustype: bustype identifier</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">name</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span> <span class="o">=</span> <span class="n">vendor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="n">product</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span> <span class="o">=</span> <span class="n">bustype</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">devnode</span> <span class="o">=</span> <span class="n">devnode</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouserel</span> <span class="o">=</span> <span class="n">mouserel</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mouseabs</span> <span class="o">=</span> <span class="n">mouseabs</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">events</span> <span class="k">if</span> <span class="n">events</span> <span class="k">else</span> <span class="p">{</span><span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span> <span class="p">:</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">keys</span><span class="p">}</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">verify</span><span class="p">()</span>
+
+        <span class="c"># open the uinput device node</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">_uinput</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">devnode</span><span class="p">)</span>
+
+        <span class="c"># set device capabilities</span>
+        <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="n">events</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
+                <span class="c"># :todo: a lot of unnecessary packing/unpacking</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">enable_event</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="n">code</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UInput.__enter__"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.__enter__">[docs]</a>    <span class="k">def</span> <span class="nf">__enter__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span>
+</div>
+<div class="viewcode-block" id="UInput.__exit__"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.__exit__">[docs]</a>    <span class="k">def</span> <span class="nf">__exit__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">type</span><span class="p">,</span> <span class="n">value</span><span class="p">,</span> <span class="n">tb</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</div>
+<div class="viewcode-block" id="UInput.__repr__"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">v</span> <span class="o">=</span> <span class="p">(</span><span class="nb">repr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">__slots__</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&#39;{}({})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="s">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+</div>
+<div class="viewcode-block" id="UInput.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;name &quot;{}&quot;, phys &quot;{}&quot;, product &quot;{}&quot;, ver &quot;{}&quot;</span><span class="se">\n</span><span class="s">&#39;</span>
+               <span class="s">&#39;enabled events:</span><span class="se">\n</span><span class="s">{}&#39;</span><span class="p">)</span>
+
+        <span class="n">cap</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">capabilities</span><span class="p">(</span><span class="n">verbose</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="n">cap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;{}:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">j</span><span class="p">:</span> <span class="n">cap</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s">&#39;  {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+
+        <span class="n">msg</span> <span class="o">=</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phys</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span>
+                         <span class="s">&#39;</span><span class="se">\n</span><span class="s">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cap</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">msg</span>
+</div>
+<div class="viewcode-block" id="UInput.create"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.create">[docs]</a>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">args</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">devnode</span><span class="p">)</span>
+
+</div>
+<div class="viewcode-block" id="UInput.close"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">_uinput</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UInput.write"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.write">[docs]</a>    <span class="k">def</span> <span class="nf">write</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Inject an input event into the input subsystem. Events are queued by</span>
+<span class="sd">        until a synchronization event is received.</span>
+
+<span class="sd">        :param event: InputEvent instance or an object with an `event`</span>
+<span class="sd">                      attribute (KeyEvent, RelEvent etc)</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="s">&#39;event&#39;</span><span class="p">):</span>
+            <span class="n">event</span> <span class="o">=</span> <span class="n">event</span><span class="o">.</span><span class="n">event</span>
+
+        <span class="n">_uinput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">code</span><span class="p">,</span> <span class="n">event</span><span class="o">.</span><span class="n">value</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UInput.syn"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.syn">[docs]</a>    <span class="k">def</span> <span class="nf">syn</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Inject a SYN_REPORT event into the input subsystem. Events queued by</span>
+<span class="sd">        :func:`write()` will be fired. If applicable, events will be merged</span>
+<span class="sd">        into an &#39;atomic&#39; event.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="n">_uinput</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_SYN</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">SYN_REPORT</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UInput.capabilities"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns the event types that this device supports as a a mapping of</span>
+<span class="sd">        supported event types to lists of handled event codes. Example::</span>
+
+<span class="sd">          { 1: [272, 273, 274],</span>
+<span class="sd">            2: [0, 1, 6, 8] }</span>
+
+<span class="sd">        If verbose is `True`, event codes and types will be resolved to their</span>
+<span class="sd">        names. Example::</span>
+
+<span class="sd">          { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272), (&#39;BTN_RIGHT&#39;, 273), (&#39;BTN_MIDDLE&#39;, 273)],</span>
+<span class="sd">            (&#39;EV_REL&#39;, 2) : [(&#39;REL_X&#39;, 0), (&#39;REL_Y&#39;, 0), (&#39;REL_HWHEEL&#39;, 6), (&#39;REL_WHEEL&#39;, 8)] }</span>
+
+<span class="sd">        Unknown codes or types will be resolved to &#39;?&#39;.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_ecodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">events</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">events</span>
+</div>
+<div class="viewcode-block" id="UInput.enable_event"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.enable_event">[docs]</a>    <span class="k">def</span> <span class="nf">enable_event</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">ecode</span><span class="p">):</span>
+        <span class="k">print</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span>
+        <span class="k">return</span> <span class="n">_uinput</span><span class="o">.</span><span class="n">enable</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">etype</span><span class="p">,</span> <span class="n">ecode</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="UInput.verify"><a class="viewcode-back" href="../../moduledoc.html#evdev.uinput.UInput.verify">[docs]</a>    <span class="k">def</span> <span class="nf">verify</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Verify that a uinput device exists and is readable and writable</span>
+<span class="sd">        by our process.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">m</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">stat</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devnode</span><span class="p">)[</span><span class="n">stat</span><span class="o">.</span><span class="n">ST_MODE</span><span class="p">]</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">stat</span><span class="o">.</span><span class="n">S_ISCHR</span><span class="p">(</span><span class="n">m</span><span class="p">):</span>
+                <span class="k">raise</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&quot;{}&quot; does not exist or is not a character device file &#39;</span>\
+                  <span class="s">&#39;- verify that the uinput module is loaded&#39;</span>
+            <span class="k">raise</span> <span class="n">UInputError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devnode</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">access</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devnode</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">W_OK</span><span class="p">):</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;&quot;{}&quot; cannot be opened for writing&#39;</span>
+            <span class="k">raise</span> <span class="n">UInputError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">devnode</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">_uinput</span><span class="o">.</span><span class="n">maxnamelen</span><span class="p">:</span>
+            <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;uinput device name must not be longer than {} characters&#39;</span>
+            <span class="k">raise</span> <span class="n">UInputError</span><span class="p">(</span><span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">_uinput</span><span class="o">.</span><span class="n">maxnamelen</span><span class="p">))</span></div></div>
+</pre></div>
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="../../genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="../../py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
+          <li><a href="../index.html" >Module code</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2012, Georgi Valkov.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

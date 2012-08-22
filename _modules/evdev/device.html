@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev.device &mdash; python-evdev 0.1.2 documentation</title>
+    <title>evdev.device &mdash; python-evdev 0.2.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.1.2',
+        VERSION:     '0.2.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.1.2 documentation" href="../../index.html" />
+    <link rel="top" title="python-evdev 0.2.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.1.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -52,7 +52,7 @@
 
 <span class="kn">import</span> <span class="nn">os</span>
 
-<span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">_input</span><span class="p">,</span> <span class="n">ecodes</span>
+<span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">_input</span><span class="p">,</span> <span class="n">ecodes</span><span class="p">,</span> <span class="n">util</span>
 <span class="kn">from</span> <span class="nn">evdev.events</span> <span class="kn">import</span> <span class="n">InputEvent</span>
 
 
@@ -131,23 +131,7 @@
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="n">cap</span> <span class="o">=</span> <span class="p">{}</span>
-            <span class="k">for</span> <span class="nb">type</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-                <span class="n">type_name</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
-
-                <span class="c"># ecodes.keys are a combination of KEY_ and BTN_ codes</span>
-                <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
-                    <span class="n">code_names</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">keys</span>
-                <span class="k">else</span><span class="p">:</span>
-                    <span class="n">code_names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ecodes</span><span class="p">,</span> <span class="n">type_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
-
-                <span class="n">codes_res</span> <span class="o">=</span> <span class="p">[]</span>
-                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
-                    <span class="n">l</span> <span class="o">=</span> <span class="p">[(</span><span class="n">code_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">code_names</span> <span class="k">else</span> <span class="p">(</span><span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
-                    <span class="n">codes_res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
-
-                <span class="n">cap</span><span class="p">[(</span><span class="n">type_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">)]</span> <span class="o">=</span> <span class="n">codes_res</span>
-            <span class="k">return</span> <span class="n">cap</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_ecodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span>
 </div>
@@ -169,10 +153,10 @@
 </div>
 <div class="viewcode-block" id="InputDevice.fileno"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.fileno">[docs]</a>    <span class="k">def</span> <span class="nf">fileno</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">        Returns file descriptor to event device. This makes passing</span>
-<span class="sd">        ``InputDevice`` instances directly to :func:`select.select()`</span>
-<span class="sd">        and :class:`asyncore.file_dispatcher` possible.</span>
-<span class="sd">        &#39;&#39;&#39;</span>
+<span class="sd">        Returns the file descriptor to the event device. This makes</span>
+<span class="sd">        passing ``InputDevice`` instances directly to</span>
+<span class="sd">        :func:`select.select()` and :class:`asyncore.file_dispatcher`</span>
+<span class="sd">        possible. &#39;&#39;&#39;</span>
 
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">fd</span>
 </div>
@@ -234,7 +218,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.1.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
