@@ -51,33 +51,76 @@
 <span class="c"># encoding: utf-8</span>
 
 <span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">select</span> <span class="kn">import</span> <span class="n">select</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">namedtuple</span>
 
 <span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">_input</span><span class="p">,</span> <span class="n">ecodes</span><span class="p">,</span> <span class="n">util</span>
 <span class="kn">from</span> <span class="nn">evdev.events</span> <span class="kn">import</span> <span class="n">InputEvent</span>
 
 
-<div class="viewcode-block" id="DeviceInfo"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo">[docs]</a><span class="k">class</span> <span class="nc">DeviceInfo</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
-    <span class="n">__slots__</span> <span class="o">=</span> <span class="s">&#39;bustype&#39;</span><span class="p">,</span> <span class="s">&#39;product&#39;</span><span class="p">,</span> <span class="s">&#39;vendor&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span>
+<span class="n">_AbsInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;AbsInfo&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;value&#39;</span><span class="p">,</span> <span class="s">&#39;min&#39;</span><span class="p">,</span> <span class="s">&#39;max&#39;</span><span class="p">,</span> <span class="s">&#39;fuzz&#39;</span><span class="p">,</span> <span class="s">&#39;flat&#39;</span><span class="p">,</span> <span class="s">&#39;resolution&#39;</span><span class="p">])</span>
+<span class="n">_KbdInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;KbdInfo&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;repeat&#39;</span><span class="p">,</span> <span class="s">&#39;delay&#39;</span><span class="p">])</span>
+<span class="n">_DeviceInfo</span> <span class="o">=</span> <span class="n">namedtuple</span><span class="p">(</span><span class="s">&#39;DeviceInfo&#39;</span><span class="p">,</span> <span class="p">[</span><span class="s">&#39;bustype&#39;</span><span class="p">,</span> <span class="s">&#39;product&#39;</span><span class="p">,</span> <span class="s">&#39;vendor&#39;</span><span class="p">,</span> <span class="s">&#39;version&#39;</span><span class="p">])</span>
 
-<div class="viewcode-block" id="DeviceInfo.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bustype</span><span class="p">,</span> <span class="n">vendor</span><span class="p">,</span> <span class="n">product</span><span class="p">,</span> <span class="n">version</span><span class="p">):</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span> <span class="o">=</span> <span class="n">bustype</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span>  <span class="o">=</span> <span class="n">vendor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">=</span> <span class="n">product</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">version</span>
-</div>
+
+<div class="viewcode-block" id="AbsInfo"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.AbsInfo">[docs]</a><span class="k">class</span> <span class="nc">AbsInfo</span><span class="p">(</span><span class="n">_AbsInfo</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    A ``namedtuple`` for storing absolut axis information -</span>
+<span class="sd">    corresponds to the ``input_absinfo`` c struct:</span>
+
+<span class="sd">     - value</span>
+<span class="sd">        Latest reported value for the axis.</span>
+
+<span class="sd">     - min</span>
+<span class="sd">        Specifies minimum value for the axis.</span>
+
+<span class="sd">     - max</span>
+<span class="sd">        Specifies maximum value for the axis.</span>
+
+<span class="sd">     - fuzz</span>
+<span class="sd">        Specifies fuzz value that is used to filter noise from the</span>
+<span class="sd">        event stream.</span>
+
+<span class="sd">     - flat</span>
+<span class="sd">        Values that are within this value will be discarded by joydev</span>
+<span class="sd">        interface and reported as 0 instead.</span>
+
+<span class="sd">     - resolution</span>
+<span class="sd">        Specifies resolution for the values reported for the axis.</span>
+<span class="sd">        Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported</span>
+<span class="sd">        in units per millimeter (units/mm), resolution for rotational</span>
+<span class="sd">        axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per</span>
+<span class="sd">        radian.</span>
+
+<span class="sd">    .. note: The input core does not clamp reported values to the</span>
+<span class="sd">       ``[minimum, maximum]`` limits, such task is left to userspace.</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="k">pass</span>
+
+<div class="viewcode-block" id="AbsInfo.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.AbsInfo.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;val {}, min {}, max {}, fuzz {}, flat {}, res {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="KbdInfo"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.KbdInfo">[docs]</a><span class="k">class</span> <span class="nc">KbdInfo</span><span class="p">(</span><span class="n">_KbdInfo</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Keyboard repeat rate:</span>
+
+<span class="sd">    - repeat:</span>
+<span class="sd">       Keyboard repeat rate in characters per second.</span>
+
+<span class="sd">    - delay:</span>
+<span class="sd">       Amount of time that a key must be depressed before it will start</span>
+<span class="sd">       to repeat (in milliseconds).</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+
+<div class="viewcode-block" id="KbdInfo.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.KbdInfo.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s">&#39;repeat {}, delay {}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
+
+</div></div>
+<div class="viewcode-block" id="DeviceInfo"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo">[docs]</a><span class="k">class</span> <span class="nc">DeviceInfo</span><span class="p">(</span><span class="n">_DeviceInfo</span><span class="p">):</span>
 <div class="viewcode-block" id="DeviceInfo.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;bus: {:04x}, product {:04x}, vendor {:04x}, version {:04x}&#39;</span>
-        <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bustype</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="DeviceInfo.__repr__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="n">s</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="n">s</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">bustype</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">vendor</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">product</span><span class="p">,</span> <span class="n">s</span><span class="o">.</span><span class="n">version</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s">&#39;{}({:04x}, {:04x}, {:04x}, {:04x})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">)</span>
-</div>
-<div class="viewcode-block" id="DeviceInfo.__eq__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.DeviceInfo.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bustype</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">bustype</span> \
-           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">vendor</span>  <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">vendor</span>  \
-           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">product</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">product</span> \
-           <span class="ow">and</span> <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">version</span>
+        <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="bp">self</span><span class="p">)</span>
 
 </div></div>
 <div class="viewcode-block" id="InputDevice"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice">[docs]</a><span class="k">class</span> <span class="nc">InputDevice</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
@@ -85,23 +128,22 @@
 <span class="sd">    A linux input device from which input events can be read.</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="n">__slots__</span> <span class="o">=</span> <span class="s">&#39;fn&#39;</span><span class="p">,</span> <span class="s">&#39;nophys&#39;</span><span class="p">,</span> <span class="s">&#39;fd&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;phys&#39;</span><span class="p">,</span> <span class="s">&#39;_capabilities&#39;</span>
+    <span class="n">__slots__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;fn&#39;</span><span class="p">,</span> <span class="s">&#39;fd&#39;</span><span class="p">,</span> <span class="s">&#39;info&#39;</span><span class="p">,</span> <span class="s">&#39;name&#39;</span><span class="p">,</span> <span class="s">&#39;phys&#39;</span><span class="p">,</span> <span class="s">&#39;_rawcapabilities&#39;</span><span class="p">,</span>
+                 <span class="s">&#39;version&#39;</span><span class="p">)</span>
 
-<div class="viewcode-block" id="InputDevice.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">,</span> <span class="n">nophys</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+<div class="viewcode-block" id="InputDevice.__init__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__init__">[docs]</a>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">dev</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        :param dev: path to input device</span>
-<span class="sd">        :param nophys: do not do a ``EVIOCGPHYS`` ioctl (needed by uinput)</span>
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="c">#: Path to input device</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fn</span> <span class="o">=</span> <span class="n">dev</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">nophys</span> <span class="o">=</span> <span class="n">nophys</span>
 
         <span class="c">#: A non-blocking file descriptor to the device file</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">fd</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">dev</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">O_RDONLY</span> <span class="o">|</span> <span class="n">os</span><span class="o">.</span><span class="n">O_NONBLOCK</span><span class="p">)</span>
 
         <span class="c"># Returns (bustype, vendor, product, version, name, phys, capabilities)</span>
-        <span class="n">info_res</span>  <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_devinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">nophys</span><span class="p">)</span>
+        <span class="n">info_res</span>  <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_devinfo</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
 
         <span class="c">#: A :class:`DeviceInfo &lt;evdev.device.DeviceInfo&gt;` instance</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">=</span> <span class="n">DeviceInfo</span><span class="p">(</span><span class="o">*</span><span class="n">info_res</span><span class="p">[:</span><span class="mi">4</span><span class="p">])</span>
@@ -110,10 +152,32 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span>
 
         <span class="c">#: The physical topology of the device</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">phys</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nophys</span> <span class="k">else</span> <span class="s">&#39;&#39;</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">nophys</span> <span class="k">else</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">phys</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">5</span><span class="p">]</span>
+
+        <span class="c">#: The evdev protocol version</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">version</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_EVIOCGVERSION</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
+
+        <span class="c">#: The raw dictionary of device capabilities - see `:func:capabilities()`</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_rawcapabilities</span> <span class="o">=</span> <span class="n">info_res</span><span class="p">[</span><span class="mi">6</span><span class="p">]</span>
 </div>
-<div class="viewcode-block" id="InputDevice.capabilities"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">absinfo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">ecodes</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_rawcapabilities</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="k">for</span> <span class="n">code</span> <span class="ow">in</span> <span class="n">ecodes</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="n">res</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">etype</span><span class="p">,</span> <span class="p">[])</span>
+                <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">code</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                    <span class="k">if</span> <span class="n">absinfo</span><span class="p">:</span>
+                        <span class="n">a</span> <span class="o">=</span> <span class="n">code</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>  <span class="c"># (0, 0, 0, 255, 0, 0)</span>
+                        <span class="n">i</span> <span class="o">=</span> <span class="n">AbsInfo</span><span class="p">(</span><span class="o">*</span><span class="n">a</span><span class="p">)</span>
+                        <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">code</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">i</span><span class="p">))</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">code</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">res</span>
+
+<div class="viewcode-block" id="InputDevice.capabilities"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.capabilities">[docs]</a>    <span class="k">def</span> <span class="nf">capabilities</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">absinfo</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Returns the event types that this device supports as a a mapping of</span>
 <span class="sd">        supported event types to lists of handled event codes. Example::</span>
@@ -121,19 +185,32 @@
 <span class="sd">          { 1: [272, 273, 274],</span>
 <span class="sd">            2: [0, 1, 6, 8] }</span>
 
-<span class="sd">        If verbose is `True`, event codes and types will be resolved to their</span>
-<span class="sd">        names. Example::</span>
+<span class="sd">        If ``verbose`` is ``True``, event codes and types will be resolved</span>
+<span class="sd">        to their names. Example::</span>
 
 <span class="sd">          { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272), (&#39;BTN_RIGHT&#39;, 273), (&#39;BTN_MIDDLE&#39;, 273)],</span>
 <span class="sd">            (&#39;EV_REL&#39;, 2) : [(&#39;REL_X&#39;, 0), (&#39;REL_Y&#39;, 0), (&#39;REL_HWHEEL&#39;, 6), (&#39;REL_WHEEL&#39;, 8)] }</span>
 
 <span class="sd">        Unknown codes or types will be resolved to &#39;?&#39;.</span>
+
+<span class="sd">        If ``absinfo`` is ``True``, the list of capabilities will also</span>
+<span class="sd">        include absolute axis information (``absmin``, ``absmax``,</span>
+<span class="sd">        ``absfuzz``, ``absflat``) in the following form::</span>
+
+<span class="sd">          { 3 : [ (0, AbsInfo(min=0, max=255, fuzz=0, flat=0)),</span>
+<span class="sd">                  (1, AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}</span>
+
+<span class="sd">        Combined with ``verbose`` the above becomes::</span>
+
+<span class="sd">          { (&#39;EV_ABS&#39;, 3) : [ ((&#39;ABS_X&#39;, 0), AbsInfo(min=0, max=255, fuzz=0, flat=0)),</span>
+<span class="sd">                              ((&#39;ABS_Y&#39;, 1), AbsInfo(min=0, max=255, fuzz=0, flat=0)) ]}</span>
+
 <span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
-            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_ecodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">))</span>
+            <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="n">util</span><span class="o">.</span><span class="n">resolve_ecodes</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">(</span><span class="n">absinfo</span><span class="p">)))</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">(</span><span class="n">absinfo</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="InputDevice.__eq__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39; Two devices are considered equal if their :data:`info` attributes are equal. &#39;&#39;&#39;</span>
@@ -144,8 +221,8 @@
         <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">phys</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="InputDevice.__repr__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__repr__">[docs]</a>    <span class="k">def</span> <span class="nf">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">nophys</span><span class="p">)</span>
-        <span class="k">return</span> <span class="s">&#39;{}({!r}, {})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">)</span>
+        <span class="n">msg</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__class__</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="p">)</span>
+        <span class="k">return</span> <span class="s">&#39;{}({!r})&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="o">*</span><span class="n">msg</span><span class="p">)</span>
 </div>
 <div class="viewcode-block" id="InputDevice.close"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.close">[docs]</a>    <span class="k">def</span> <span class="nf">close</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">os</span><span class="o">.</span><span class="n">close</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
@@ -174,17 +251,41 @@
         <span class="k">if</span> <span class="n">event</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">event</span><span class="p">)</span>
 </div>
+<div class="viewcode-block" id="InputDevice.read_loop"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.read_loop">[docs]</a>    <span class="k">def</span> <span class="nf">read_loop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Enter a polling loop that yields input events.&#39;&#39;&#39;</span>
+
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">r</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
+            <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
+                <span class="k">yield</span> <span class="n">event</span>
+</div>
 <div class="viewcode-block" id="InputDevice.read"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;</span>
 <span class="sd">        Read multiple input events from device. This function returns a</span>
 <span class="sd">        generator object that yields :class:`InputEvent</span>
-<span class="sd">        &lt;evdev.events.InputEvent&gt;` instances.  &#39;&#39;&#39;</span>
+<span class="sd">        &lt;evdev.events.InputEvent&gt;` instances.</span>
+
+<span class="sd">        .. warning:: Attempting to read from an input device that has no</span>
+<span class="sd">                     available data will result in a segmentation fault. Consider</span>
+<span class="sd">                     wrapping calls to ``read()`` in a ``select()``.</span>
+<span class="sd">        &#39;&#39;&#39;</span>
 
         <span class="c"># events -&gt; [(sec, usec, type, code, val), ...]</span>
         <span class="n">events</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">device_read_many</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
-            <span class="k">yield</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span></div></div>
+            <span class="k">yield</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
+</div>
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Get or set the keyboard repeat rate (in characters per</span>
+<span class="sd">        minute) and delay (in milliseconds).&#39;&#39;&#39;</span>
+
+        <span class="k">return</span> <span class="n">KbdInfo</span><span class="p">(</span><span class="o">*</span><span class="n">_input</span><span class="o">.</span><span class="n">ioctl_EVIOCGREP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">))</span>
+
+    <span class="nd">@repeat.setter</span>
+<div class="viewcode-block" id="InputDevice.repeat"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.repeat">[docs]</a>    <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_EVIOCSREP</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="o">*</span><span class="n">value</span><span class="p">)</span></div></div>
 </pre></div>
 
           </div>

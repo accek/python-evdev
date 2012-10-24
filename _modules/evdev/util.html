@@ -100,28 +100,47 @@
 </div>
 <div class="viewcode-block" id="resolve_ecodes"><a class="viewcode-back" href="../../moduledoc.html#evdev.util.resolve_ecodes">[docs]</a><span class="k">def</span> <span class="nf">resolve_ecodes</span><span class="p">(</span><span class="n">typecodemap</span><span class="p">,</span> <span class="n">unknown</span><span class="o">=</span><span class="s">&#39;?&#39;</span><span class="p">):</span>
     <span class="sd">&#39;&#39;&#39;</span>
-<span class="sd">    Resolve event codes and types to their verbose names:</span>
-<span class="sd">    {            1  : [272, 273, 274] } =&gt;</span>
-<span class="sd">    { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272),</span>
-<span class="sd">                       (&#39;BTN_RIGHT&#39;, 273),</span>
-<span class="sd">                       (&#39;BTN_MIDDLE&#39;, 273)] }</span>
+<span class="sd">    Resolve event codes and types to their verbose names.</span>
+
+<span class="sd">    :param typecodemap: mapping of event types to lists of event codes</span>
+<span class="sd">    :param unknown: symbol to which unknown types or codes will be resolved</span>
+
+<span class="sd">    Example::</span>
+
+<span class="sd">        resolve_ecodes({ 1 : [272, 273, 274] })</span>
+<span class="sd">        { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272), (&#39;BTN_RIGHT&#39;, 273), (&#39;BTN_MIDDLE&#39;, 274)] }</span>
+
+<span class="sd">    If the typecodemap contains absolute axis info (wrapped in</span>
+<span class="sd">    instances of `AbsInfo &lt;evdev.device.AbsInfo&gt;`) the result would</span>
+<span class="sd">    look like::</span>
+
+<span class="sd">        resove_ecodes({ 3 : [(0, AbsInfo(...))] })</span>
+<span class="sd">        { (&#39;EV_ABS&#39;, 3L): [((&#39;ABS_X&#39;, 0L), AbsInfo(...))] }</span>
 <span class="sd">    &#39;&#39;&#39;</span>
 
-    <span class="k">for</span> <span class="nb">type</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="n">typecodemap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
-        <span class="n">type_name</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">etype</span><span class="p">,</span> <span class="n">codes</span> <span class="ow">in</span> <span class="n">typecodemap</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">type_name</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV</span><span class="p">[</span><span class="n">etype</span><span class="p">]</span>
 
         <span class="c"># ecodes.keys are a combination of KEY_ and BTN_ codes</span>
-        <span class="k">if</span> <span class="nb">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">etype</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
             <span class="n">code_names</span> <span class="o">=</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">keys</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">code_names</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">ecodes</span><span class="p">,</span> <span class="n">type_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">&#39;_&#39;</span><span class="p">)[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="n">codes_res</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="n">res</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">codes</span><span class="p">:</span>
-            <span class="n">l</span> <span class="o">=</span> <span class="p">[(</span><span class="n">code_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">code_names</span> <span class="k">else</span> <span class="p">(</span><span class="n">unknown</span><span class="p">,</span> <span class="n">i</span><span class="p">)]</span>
-            <span class="n">codes_res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+            <span class="c"># elements with AbsInfo(), eg { 3 : [(0, AbsInfo(...)), (1, AbsInfo(...))] }</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="p">((</span><span class="n">code_names</span><span class="p">[</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]],</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">code_names</span> \
+                    <span class="k">else</span> <span class="p">((</span><span class="n">unknown</span><span class="p">,</span> <span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">i</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
 
-        <span class="k">yield</span> <span class="p">(</span><span class="n">type_name</span><span class="p">,</span> <span class="nb">type</span><span class="p">),</span> <span class="n">codes_res</span>
+            <span class="c"># just ecodes { 0 : [0, 1, 3], 1 : [30, 48] }</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">l</span> <span class="o">=</span> <span class="p">(</span><span class="n">code_names</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">i</span><span class="p">)</span> <span class="k">if</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">code_names</span> <span class="k">else</span> <span class="p">(</span><span class="n">unknown</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
+
+            <span class="n">res</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+
+        <span class="k">yield</span> <span class="p">(</span><span class="n">type_name</span><span class="p">,</span> <span class="n">etype</span><span class="p">),</span> <span class="n">res</span>
 
 </div>
 <span class="n">__all__</span> <span class="o">=</span> <span class="n">list_devices</span><span class="p">,</span> <span class="n">is_device</span><span class="p">,</span> <span class="n">categorize</span><span class="p">,</span> <span class="n">resolve_ecodes</span>

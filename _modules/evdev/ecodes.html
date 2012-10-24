@@ -95,10 +95,16 @@
             <span class="n">g</span><span class="o">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="p">{})[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">k</span>
             <span class="n">ecodes</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span>
 
+
 <span class="c">#: keys are a combination of all BTN and KEY codes</span>
 <span class="n">keys</span> <span class="o">=</span> <span class="p">{}</span>
-<span class="n">keys</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">KEY</span><span class="p">)</span>
 <span class="n">keys</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">BTN</span><span class="p">)</span>
+<span class="n">keys</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">KEY</span><span class="p">)</span>
+
+<span class="c"># make keys safe to use for the default list of uinput device</span>
+<span class="c"># capabilities</span>
+<span class="k">del</span> <span class="n">keys</span><span class="p">[</span><span class="n">_ecodes</span><span class="o">.</span><span class="n">KEY_MAX</span><span class="p">]</span>
+<span class="k">del</span> <span class="n">keys</span><span class="p">[</span><span class="n">_ecodes</span><span class="o">.</span><span class="n">KEY_CNT</span><span class="p">]</span>
 
 <span class="c">#: mapping of event types to other value/name mappings</span>
 <span class="n">bytype</span> <span class="o">=</span> <span class="p">{</span>

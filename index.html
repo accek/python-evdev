@@ -57,8 +57,8 @@ generated in the kernel directly to userspace through character
 devices that are typically located in <tt class="docutils literal"><span class="pre">/dev/input/</span></tt>.</p>
 <p><tt class="xref py py-mod docutils literal"><span class="pre">evdev</span></tt> also comes with bindings to <tt class="docutils literal"><span class="pre">uinput</span></tt>, the userspace
 input subsystem. <tt class="docutils literal"><span class="pre">Uinput</span></tt> allows userspace programs to create and
-handle input devices from which they can inject events directly into
-the input subsystem.</p>
+handle input devices from which input events can be directly injected
+into the input subsystem.</p>
 <div class="section" id="tutorial">
 <h2>Tutorial<a class="headerlink" href="#tutorial" title="Permalink to this headline">¶</a></h2>
 <p>Listing accessible event devices:</p>
@@ -119,23 +119,42 @@ the input subsystem.</p>
 </div>
 <p>Reading events:</p>
 <div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">InputDevice</span><span class="p">,</span> <span class="n">categorize</span><span class="p">,</span> <span class="n">ecodes</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">select</span> <span class="kn">import</span> <span class="n">select</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span> <span class="o">=</span> <span class="n">InputDevice</span><span class="p">(</span><span class="s">&#39;/dev/input/event1&#39;</span><span class="p">)</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="k">print</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
 <span class="go">device /dev/input/event1, name &quot;Dell Dell USB Keyboard&quot;, phys &quot;usb-0000:00:12.1-2/input0&quot;</span>
 
-<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
-<span class="gp">... </span>   <span class="n">r</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">select</span><span class="p">([</span><span class="n">dev</span><span class="p">],</span> <span class="p">[],</span> <span class="p">[])</span>
-<span class="gp">... </span>   <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">dev</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
-<span class="gp">... </span>       <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
-<span class="gp">... </span>           <span class="k">print</span><span class="p">(</span><span class="n">categorize</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
-<span class="gp">... </span><span class="c"># hitting a and holding space</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">dev</span><span class="o">.</span><span class="n">read_loop</span><span class="p">():</span>
+<span class="gp">... </span>    <span class="k">if</span> <span class="n">event</span><span class="o">.</span><span class="n">type</span> <span class="o">==</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_KEY</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="k">print</span><span class="p">(</span><span class="n">categorize</span><span class="p">(</span><span class="n">event</span><span class="p">))</span>
+<span class="gp">... </span><span class="c"># pressing &#39;a&#39; and holding &#39;space&#39;</span>
 <span class="go">key event at 1337016188.396030, 30 (KEY_A), down</span>
 <span class="go">key event at 1337016188.492033, 30 (KEY_A), up</span>
 <span class="go">key event at 1337016189.772129, 57 (KEY_SPACE), down</span>
 <span class="go">key event at 1337016190.275396, 57 (KEY_SPACE), hold</span>
 <span class="go">key event at 1337016190.284160, 57 (KEY_SPACE), up</span>
+</pre></div>
+</div>
+<p>Reading events from multiple devices:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">InputDevice</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">select</span> <span class="kn">import</span> <span class="n">select</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">devices</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">InputDevice</span><span class="p">,</span> <span class="p">(</span><span class="s">&#39;/dev/input/event1&#39;</span><span class="p">,</span> <span class="s">&#39;/dev/input/event2&#39;</span><span class="p">))</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">devices</span> <span class="o">=</span> <span class="p">{</span><span class="n">dev</span><span class="o">.</span><span class="n">fd</span> <span class="p">:</span> <span class="n">dev</span> <span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">}</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">dev</span> <span class="ow">in</span> <span class="n">devices</span><span class="o">.</span><span class="n">values</span><span class="p">():</span> <span class="k">print</span><span class="p">(</span><span class="n">dev</span><span class="p">)</span>
+<span class="go">device /dev/input/event1, name &quot;Dell Dell USB Keyboard&quot;, phys &quot;usb-0000:00:12.1-2/input0&quot;</span>
+<span class="go">device /dev/input/event2, name &quot;Logitech USB Laser Mouse&quot;, phys &quot;usb-0000:00:12.0-2/input0&quot;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+<span class="gp">... </span>   <span class="n">r</span><span class="p">,</span><span class="n">w</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="n">select</span><span class="p">(</span><span class="n">devices</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[])</span>
+<span class="gp">... </span>   <span class="k">for</span> <span class="n">fd</span> <span class="ow">in</span> <span class="n">r</span><span class="p">:</span>
+<span class="gp">... </span>       <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">devices</span><span class="p">[</span><span class="n">fd</span><span class="p">]</span><span class="o">.</span><span class="n">read</span><span class="p">():</span>
+<span class="gp">... </span>           <span class="k">print</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+<span class="go">event at 1351116708.002230, code 01, type 02, val 01</span>
+<span class="go">event at 1351116708.002234, code 00, type 00, val 00</span>
+<span class="go">event at 1351116708.782231, code 04, type 04, val 458782</span>
+<span class="go">event at 1351116708.782237, code 02, type 01, val 01</span>
 </pre></div>
 </div>
 <p>Reading events with asyncore:</p>
@@ -172,7 +191,7 @@ the input subsystem.</p>
 </pre></div>
 </div>
 <p>Injecting events:</p>
-<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">UInput</span><span class="p">,</span> <span class="n">ecodes</span> <span class="k">as</span> <span class="n">e</span><span class="p">,</span>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">evdev</span> <span class="kn">import</span> <span class="n">UInput</span><span class="p">,</span> <span class="n">ecodes</span> <span class="k">as</span> <span class="n">e</span>
 
 <span class="gp">&gt;&gt;&gt; </span><span class="n">ui</span> <span class="o">=</span> <span class="n">UInput</span><span class="p">()</span>
 
