@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev documentation &mdash; python-evdev 0.2.0 documentation</title>
+    <title>evdev documentation &mdash; python-evdev 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.2.0 documentation" href="#" />
+    <link rel="top" title="python-evdev 0.3.0 documentation" href="#" />
     <link rel="next" title="evdev.events" href="moduledoc.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="moduledoc.html" title="evdev.events"
              accesskey="N">next</a> |</li>
-        <li><a href="#">python-evdev 0.2.0 documentation</a> &raquo;</li> 
+        <li><a href="#">python-evdev 0.3.0 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -178,6 +178,11 @@ into the input subsystem.</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">loop</span><span class="p">()</span>
 <span class="go">InputEvent(1337255905L, 358854L, 1, 30, 0L)</span>
 <span class="go">InputEvent(1337255905L, 358857L, 0, 0, 0L)</span>
+</pre></div>
+</div>
+<p>Getting exclusive access to a device:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span><span class="o">.</span><span class="n">grab</span><span class="p">()</span>  <span class="c"># become the sole recipient of all incoming input events</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">dev</span><span class="o">.</span><span class="n">ungrab</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Associating classes with event types (see <a class="reference internal" href="moduledoc.html#module-evdev.events" title="evdev.events"><tt class="xref py py-mod docutils literal"><span class="pre">events</span></tt></a>):</p>
@@ -380,7 +385,7 @@ userspace program binds it to the GPL2.</li>
         <li class="right" >
           <a href="moduledoc.html" title="evdev.events"
              >next</a> |</li>
-        <li><a href="#">python-evdev 0.2.0 documentation</a> &raquo;</li> 
+        <li><a href="#">python-evdev 0.3.0 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">

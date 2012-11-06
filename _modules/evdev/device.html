@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev.device &mdash; python-evdev 0.2.0 documentation</title>
+    <title>evdev.device &mdash; python-evdev 0.3.0 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.2.0',
+        VERSION:     '0.3.0',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.2.0 documentation" href="../../index.html" />
+    <link rel="top" title="python-evdev 0.3.0 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.3.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -191,7 +191,7 @@
 <span class="sd">          { (&#39;EV_KEY&#39;, 1) : [(&#39;BTN_MOUSE&#39;, 272), (&#39;BTN_RIGHT&#39;, 273), (&#39;BTN_MIDDLE&#39;, 273)],</span>
 <span class="sd">            (&#39;EV_REL&#39;, 2) : [(&#39;REL_X&#39;, 0), (&#39;REL_Y&#39;, 0), (&#39;REL_HWHEEL&#39;, 6), (&#39;REL_WHEEL&#39;, 8)] }</span>
 
-<span class="sd">        Unknown codes or types will be resolved to &#39;?&#39;.</span>
+<span class="sd">        Unknown codes or types will be resolved to ``&#39;?&#39;``.</span>
 
 <span class="sd">        If ``absinfo`` is ``True``, the list of capabilities will also</span>
 <span class="sd">        include absolute axis information (``absmin``, ``absmax``,</span>
@@ -212,8 +212,26 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_capabilities</span><span class="p">(</span><span class="n">absinfo</span><span class="p">)</span>
 </div>
+<div class="viewcode-block" id="InputDevice.leds"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.leds">[docs]</a>    <span class="k">def</span> <span class="nf">leds</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">        Returns currently set LED keys. Example::</span>
+
+<span class="sd">          [0, 1, 8, 9]</span>
+
+<span class="sd">        If ``verbose`` is ``True``, event codes will be resolved to</span>
+<span class="sd">        their names. Unknown codes will be resolved to ``&#39;?&#39;``. Example::</span>
+
+<span class="sd">          [(&#39;LED_NUML&#39;, 0), (&#39;LED_CAPSL&#39;, 1), (&#39;LED_MISC&#39;, 8), (&#39;LED_MAIL&#39;, 9)]</span>
+
+<span class="sd">        &#39;&#39;&#39;</span>
+        <span class="n">leds</span> <span class="o">=</span> <span class="n">_input</span><span class="o">.</span><span class="n">get_sw_led_snd</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">EV_LED</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[(</span><span class="n">ecodes</span><span class="o">.</span><span class="n">LED</span><span class="p">[</span><span class="n">l</span><span class="p">]</span> <span class="k">if</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">ecodes</span><span class="o">.</span><span class="n">LED</span> <span class="k">else</span> <span class="s">&#39;?&#39;</span><span class="p">,</span> <span class="n">l</span><span class="p">)</span> <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">leds</span><span class="p">]</span>
+
+        <span class="k">return</span> <span class="n">leds</span>
+</div>
 <div class="viewcode-block" id="InputDevice.__eq__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__eq__">[docs]</a>    <span class="k">def</span> <span class="nf">__eq__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">o</span><span class="p">):</span>
-        <span class="sd">&#39;&#39;&#39; Two devices are considered equal if their :data:`info` attributes are equal. &#39;&#39;&#39;</span>
+        <span class="sd">&#39;&#39;&#39;Two devices are considered equal if their :data:`info` attributes are equal.&#39;&#39;&#39;</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">info</span> <span class="o">==</span> <span class="n">o</span><span class="o">.</span><span class="n">info</span>
 </div>
 <div class="viewcode-block" id="InputDevice.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
@@ -276,6 +294,25 @@
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">events</span><span class="p">:</span>
             <span class="k">yield</span> <span class="n">InputEvent</span><span class="p">(</span><span class="o">*</span><span class="n">i</span><span class="p">)</span>
 </div>
+<div class="viewcode-block" id="InputDevice.grab"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.grab">[docs]</a>    <span class="k">def</span> <span class="nf">grab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Grab input device using `EVIOCGRAB` - other applications</span>
+<span class="sd">        will be unable to receive until the device is released. Only</span>
+<span class="sd">        one process can hold a `EVIOCGRAB` on a device.</span>
+
+<span class="sd">        .. warning:: Grabbing an already grabbed device will raise an</span>
+<span class="sd">                     IOError(&#39;Device or resource busy&#39;) exception.&#39;&#39;&#39;</span>
+
+        <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_EVIOCGRAB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+</div>
+<div class="viewcode-block" id="InputDevice.ungrab"><a class="viewcode-back" href="../../moduledoc.html#evdev.device.InputDevice.ungrab">[docs]</a>    <span class="k">def</span> <span class="nf">ungrab</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;Release device if it has been already grabbed (uses</span>
+<span class="sd">        `EVIOCGRAB`).</span>
+
+<span class="sd">        .. warning:: Releasing an already released device will raise an</span>
+<span class="sd">                     IOError(&#39;Invalid argument&#39;) exception.&#39;&#39;&#39;</span>
+
+        <span class="n">_input</span><span class="o">.</span><span class="n">ioctl_EVIOCGRAB</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fd</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+</div>
     <span class="nd">@property</span>
     <span class="k">def</span> <span class="nf">repeat</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Get or set the keyboard repeat rate (in characters per</span>
@@ -319,7 +356,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.2.0 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.3.0 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
