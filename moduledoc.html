@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev.events &mdash; python-evdev 0.3.0 documentation</title>
+    <title>evdev.events &mdash; python-evdev 0.3.2 documentation</title>
     
     <link rel="stylesheet" href="_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '0.3.0',
+        VERSION:     '0.3.2',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.3.0 documentation" href="index.html" />
+    <link rel="top" title="python-evdev 0.3.2 documentation" href="index.html" />
     <link rel="prev" title="evdev documentation" href="index.html" /> 
   </head>
   <body>
@@ -40,7 +40,7 @@
         <li class="right" >
           <a href="index.html" title="evdev documentation"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">python-evdev 0.3.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">python-evdev 0.3.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -446,12 +446,6 @@ their names. Unknown codes will be resolved to <tt class="docutils literal"><spa
 <tt class="descname">read</tt><big>(</big><big>)</big><a class="reference internal" href="_modules/evdev/device.html#InputDevice.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#evdev.device.InputDevice.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read multiple input events from device. This function returns a
 generator object that yields <a class="reference internal" href="#evdev.events.InputEvent" title="evdev.events.InputEvent"><tt class="xref py py-class docutils literal"><span class="pre">InputEvent</span></tt></a> instances.</p>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<p class="last">Attempting to read from an input device that has no
-available data will result in a segmentation fault. Consider
-wrapping calls to <tt class="docutils literal"><span class="pre">read()</span></tt> in a <tt class="docutils literal"><span class="pre">select()</span></tt>.</p>
-</div>
 </dd></dl>
 
 <dl class="method">
@@ -545,7 +539,7 @@ minute) and delay (in milliseconds).</p>
 
 <dl class="attribute">
 <dt id="evdev.device.DeviceInfo.__dict__">
-<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'DeviceInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x37260c8&gt;, '__doc__': None})</em><a class="headerlink" href="#evdev.device.DeviceInfo.__dict__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'DeviceInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x35d52a8&gt;, '__doc__': None})</em><a class="headerlink" href="#evdev.device.DeviceInfo.__dict__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -613,7 +607,7 @@ radian.</p>
 
 <dl class="attribute">
 <dt id="evdev.device.AbsInfo.__dict__">
-<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'AbsInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x3639f50&gt;, '__doc__': '\n    A ``namedtuple`` for storing absolut axis information -\n    corresponds to the ``input_absinfo`` c struct:\n\n     - value\n        Latest reported value for the axis.\n\n     - min\n        Specifies minimum value for the axis.\n\n     - max\n        Specifies maximum value for the axis.\n\n     - fuzz\n        Specifies fuzz value that is used to filter noise from the\n        event stream.\n\n     - flat\n        Values that are within this value will be discarded by joydev\n        interface and reported as 0 instead.\n\n     - resolution\n        Specifies resolution for the values reported for the axis.\n        Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported\n        in units per millimeter (units/mm), resolution for rotational\n        axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per\n        radian.\n\n    .. note: The input core does not clamp reported values to the\n       ``[minimum, maximum]`` limits, such task is left to userspace.\n    '})</em><a class="headerlink" href="#evdev.device.AbsInfo.__dict__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'AbsInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x35d51b8&gt;, '__doc__': '\n    A ``namedtuple`` for storing absolut axis information -\n    corresponds to the ``input_absinfo`` c struct:\n\n     - value\n        Latest reported value for the axis.\n\n     - min\n        Specifies minimum value for the axis.\n\n     - max\n        Specifies maximum value for the axis.\n\n     - fuzz\n        Specifies fuzz value that is used to filter noise from the\n        event stream.\n\n     - flat\n        Values that are within this value will be discarded by joydev\n        interface and reported as 0 instead.\n\n     - resolution\n        Specifies resolution for the values reported for the axis.\n        Resolution for main axes (``ABS_X, ABS_Y, ABS_Z``) is reported\n        in units per millimeter (units/mm), resolution for rotational\n        axes (``ABS_RX, ABS_RY, ABS_RZ``) is reported in units per\n        radian.\n\n    .. note: The input core does not clamp reported values to the\n       ``[minimum, maximum]`` limits, such task is left to userspace.\n    '})</em><a class="headerlink" href="#evdev.device.AbsInfo.__dict__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -649,7 +643,7 @@ to repeat (in milliseconds).</p>
 
 <dl class="attribute">
 <dt id="evdev.device.KbdInfo.__dict__">
-<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'KbdInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x3726050&gt;, '__doc__': '\n    Keyboard repeat rate:\n\n    - repeat:\n       Keyboard repeat rate in characters per second.\n\n    - delay:\n       Amount of time that a key must be depressed before it will start\n       to repeat (in milliseconds).\n    '})</em><a class="headerlink" href="#evdev.device.KbdInfo.__dict__" title="Permalink to this definition">¶</a></dt>
+<tt class="descname">__dict__</tt><em class="property"> = dict_proxy({'__dict__': &lt;attribute '__dict__' of 'KbdInfo' objects&gt;, '__module__': 'evdev.device', '__str__': &lt;function __str__ at 0x35d5230&gt;, '__doc__': '\n    Keyboard repeat rate:\n\n    - repeat:\n       Keyboard repeat rate in characters per second.\n\n    - delay:\n       Amount of time that a key must be depressed before it will start\n       to repeat (in milliseconds).\n    '})</em><a class="headerlink" href="#evdev.device.KbdInfo.__dict__" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1002,7 +996,7 @@ illustrated by a few examples:</p>
         <li class="right" >
           <a href="index.html" title="evdev documentation"
              >previous</a> |</li>
-        <li><a href="index.html">python-evdev 0.3.0 documentation</a> &raquo;</li> 
+        <li><a href="index.html">python-evdev 0.3.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
