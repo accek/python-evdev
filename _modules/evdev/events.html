@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>evdev.events &mdash; python-evdev 0.3.2 documentation</title>
+    <title>evdev.events &mdash; python-evdev 0.3.3 documentation</title>
     
     <link rel="stylesheet" href="../../_static/nature.css" type="text/css" />
     <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
@@ -15,7 +15,7 @@
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '../../',
-        VERSION:     '0.3.2',
+        VERSION:     '0.3.3',
         COLLAPSE_INDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -24,7 +24,7 @@
     <script type="text/javascript" src="../../_static/jquery.js"></script>
     <script type="text/javascript" src="../../_static/underscore.js"></script>
     <script type="text/javascript" src="../../_static/doctools.js"></script>
-    <link rel="top" title="python-evdev 0.3.2 documentation" href="../../index.html" />
+    <link rel="top" title="python-evdev 0.3.3 documentation" href="../../index.html" />
     <link rel="up" title="Module code" href="../index.html" /> 
   </head>
   <body>
@@ -37,7 +37,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.3.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.3.3 documentation</a> &raquo;</li>
           <li><a href="../index.html" accesskey="U">Module code</a> &raquo;</li> 
       </ul>
     </div>  
@@ -154,8 +154,8 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">event</span> <span class="o">=</span> <span class="n">event</span>
 </div>
 <div class="viewcode-block" id="KeyEvent.__str__"><a class="viewcode-back" href="../../moduledoc.html#evdev.events.KeyEvent.__str__">[docs]</a>    <span class="k">def</span> <span class="nf">__str__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-        <span class="k">try</span><span class="p">:</span>    <span class="n">ks</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;hold&#39;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">keystate</span><span class="p">]</span>
-        <span class="k">except</span><span class="p">:</span> <span class="n">ks</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
+        <span class="k">try</span><span class="p">:</span> <span class="n">ks</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;up&#39;</span><span class="p">,</span> <span class="s">&#39;down&#39;</span><span class="p">,</span> <span class="s">&#39;hold&#39;</span><span class="p">)[</span><span class="bp">self</span><span class="o">.</span><span class="n">keystate</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">IndexError</span><span class="p">:</span> <span class="n">ks</span> <span class="o">=</span> <span class="s">&#39;unknown&#39;</span>
 
         <span class="n">msg</span> <span class="o">=</span> <span class="s">&#39;key event at {:f}, {} ({}), {}&#39;</span>
         <span class="k">return</span> <span class="n">msg</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">event</span><span class="o">.</span><span class="n">timestamp</span><span class="p">(),</span>
@@ -234,7 +234,8 @@
 <span class="p">}</span>
 
 
-<span class="n">__all__</span> <span class="o">=</span> <span class="n">InputEvent</span><span class="p">,</span> <span class="n">KeyEvent</span><span class="p">,</span> <span class="n">RelEvent</span><span class="p">,</span> <span class="n">SynEvent</span><span class="p">,</span> <span class="n">AbsEvent</span><span class="p">,</span> <span class="n">event_factory</span>
+<span class="n">__all__</span> <span class="o">=</span> <span class="p">(</span><span class="s">&#39;InputEvent&#39;</span><span class="p">,</span> <span class="s">&#39;KeyEvent&#39;</span><span class="p">,</span> <span class="s">&#39;RelEvent&#39;</span><span class="p">,</span> <span class="s">&#39;SynEvent&#39;</span><span class="p">,</span>
+           <span class="s">&#39;AbsEvent&#39;</span><span class="p">,</span> <span class="s">&#39;event_factory&#39;</span><span class="p">)</span>
 </pre></div>
 
           </div>
@@ -268,7 +269,7 @@
         <li class="right" >
           <a href="../../py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
-        <li><a href="../../index.html">python-evdev 0.3.2 documentation</a> &raquo;</li>
+        <li><a href="../../index.html">python-evdev 0.3.3 documentation</a> &raquo;</li>
           <li><a href="../index.html" >Module code</a> &raquo;</li> 
       </ul>
     </div>
